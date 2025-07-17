@@ -2,6 +2,7 @@ package com.tanghai.expense_tracker.util;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 /**
  *  ApiResponse<UserDTO> apiResponse = new ApiResponse.Builder<UserDTO>()
@@ -46,6 +47,7 @@ public class ResponseBuilder<T> {
         ResponseBuilder<T> rb = new ResponseBuilder<>();
         rb.setStatus("success");
         rb.setMessage("OK");
+        rb.setDate(DateUtil.format(new Date()));
         rb.setData(data);
         return rb;
     }
