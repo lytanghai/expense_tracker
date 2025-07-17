@@ -30,20 +30,9 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     @Override
     @Scheduled(cron = "0 0 22 * * *") // ✅ 10:00 PM every day
-    public ResponseBuilder<List<ExpenseTracker>> fetchDaily(boolean enableCache) {
-        // If cache is enabled and already initialized, return from cache
-        if (enableCache && !ExpenseRecordCache.isEmpty()) {
-            return new ResponseBuilder<List<ExpenseTracker>>().success(ExpenseRecordCache.getAll());
-        }
-
-        // Else, fetch from DB and populate cache if needed
+    public ResponseBuilder<List<ExpenseTracker>> fetchDaily() {
         String[] range = DateUtil.getDayDateRange(new Date());
-        List<ExpenseTracker> result = expenseTrackerRepo.findAllByDateRange(range[0], range[1]);
-        if (enableCache && !result.isEmpty()) {
-            ExpenseRecordCache.init(result);
-        }
-
-        return new ResponseBuilder<List<ExpenseTracker>>().success(result);
+        return new ResponseBuilder<List<ExpenseTracker>>().success(expenseTrackerRepo.findAllByDateRange(range[0], range[1]));
     }
 
     @Override

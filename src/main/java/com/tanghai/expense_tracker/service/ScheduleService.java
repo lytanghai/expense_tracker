@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface ScheduleService {
     ResponseBuilder<List<ExpenseTracker>> fetchMonthly();
-    ResponseBuilder<List<ExpenseTracker>> fetchDaily(boolean enableCache);
+    ResponseBuilder<List<ExpenseTracker>> fetchDaily();
     void cleanup();
 }

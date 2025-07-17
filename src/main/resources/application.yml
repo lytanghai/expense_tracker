@@ -8,9 +8,13 @@ spring:
           enabled: true
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres
-    username: postgres.eqgclhodynrgjbwijznz
-    password: 093606872Tanghai$
+#    url: jdbc:postgresql://aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres
+#    username: postgres.eqgclhodynrgjbwijznz
+#    password: 093606872Tanghai$
+#
+    url: jdbc:postgresql://localhost:5432/configure
+    username: postgres
+    password: 309927605
 
 server:
   servlet:

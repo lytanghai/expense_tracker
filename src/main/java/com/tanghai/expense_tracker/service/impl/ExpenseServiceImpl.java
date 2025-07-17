@@ -4,6 +4,7 @@ import com.tanghai.expense_tracker.cache.ExpenseRecordCache;
 import com.tanghai.expense_tracker.constant.ApplicationCode;
 import com.tanghai.expense_tracker.dto.req.ExpenseAddRequest;
 import com.tanghai.expense_tracker.dto.req.ExpenseDeleteRequest;
+import com.tanghai.expense_tracker.dto.res.ExpenseTrackerListResp;
 import com.tanghai.expense_tracker.dto.res.PaginatedResponse;
 import com.tanghai.expense_tracker.entity.ExpenseTracker;
 import com.tanghai.expense_tracker.exception.ServiceException;
@@ -22,6 +23,7 @@ import org.springframework.util.ObjectUtils;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -78,6 +80,11 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
 
     @Override
+    public void cleanup() {
+        expenseTrackerRepo.deleteAll();
+    }
+
+    @Override
     public void deleteByIdOrDate(ExpenseDeleteRequest expenseDeleteRequest) {
         int id = expenseDeleteRequest.getId();
         if(!ObjectUtils.isEmpty(id)) {
@@ -90,9 +97,39 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
 
     @Override
-    public void cleanup() {
-        expenseTrackerRepo.deleteAll();
+    public ResponseBuilder<ExpenseTrackerListResp> fetchDaily(boolean enableCache) {
+        List<ExpenseTracker> data;
+
+        // Fetch from cache if enabled and available
+        if (enableCache && !ExpenseRecordCache.isEmpty()) {
+            data = ExpenseRecordCache.getAll();
+        } else {
+            String[] range = DateUtil.getDayDateRange(new Date());
+            data = expenseTrackerRepo.findAllByDateRange(range[0], range[1]);
+
+            // Populate cache if enabled
+            if (enableCache && !data.isEmpty()) {
+                ExpenseRecordCache.init(data);
+            }
+        }
+
+        // Build response
+        ExpenseTrackerListResp response = new ExpenseTrackerListResp();
+        response.setResult(data);
+        response.setTotalItem(data.size());
+
+        Map<String, BigDecimal> totals = data.stream()
+                .collect(Collectors.groupingBy(
+                        ExpenseTracker::getCurrency,
+                        Collectors.reducing(BigDecimal.ZERO, ExpenseTracker::getPrice, BigDecimal::add)
+                ));
+
+        response.setTotalAmountInUSD(totals.getOrDefault("USD", BigDecimal.ZERO));
+        response.setTotalAmountInKHR(totals.getOrDefault("KHR", BigDecimal.ZERO));
+
+        return new ResponseBuilder<ExpenseTrackerListResp>().success(response);
     }
+
 
     @Override
     public ResponseBuilder<PaginatedResponse<ExpenseTracker>> fetchExpenses(String month, int page, int size) {
@@ -128,17 +165,4 @@ public class ExpenseServiceImpl implements ExpenseService {
         return ResponseBuilder.success(null);
     }
 
-    @Override
-    public ResponseBuilder<List<ExpenseTracker>> fetchDaily(boolean enableCache) {
-        if (enableCache && !ExpenseRecordCache.isEmpty()) {
-            return new ResponseBuilder<List<ExpenseTracker>>().success(ExpenseRecordCache.getAll());
-        }
-        String[] range = DateUtil.getDayDateRange(new Date());
-        List<ExpenseTracker> result = expenseTrackerRepo.findAllByDateRange(range[0], range[1]);
-        if (enableCache && !result.isEmpty()) {
-            ExpenseRecordCache.init(result);
-        }
-
-        return new ResponseBuilder<List<ExpenseTracker>>().success(result);
-    }
 }

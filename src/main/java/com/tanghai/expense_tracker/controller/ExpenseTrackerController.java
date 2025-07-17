@@ -2,6 +2,7 @@ package com.tanghai.expense_tracker.controller;
 
 import com.tanghai.expense_tracker.dto.req.ExpenseAddRequest;
 import com.tanghai.expense_tracker.dto.req.ExpenseDeleteRequest;
+import com.tanghai.expense_tracker.dto.res.ExpenseTrackerListResp;
 import com.tanghai.expense_tracker.dto.res.PaginatedResponse;
 import com.tanghai.expense_tracker.entity.ExpenseTracker;
 import com.tanghai.expense_tracker.service.ExpenseService;
@@ -20,7 +21,7 @@ public class ExpenseTrackerController {
         this.expenseService = expenseService;
     }
 
-    @PostMapping("/create_new")
+    @PostMapping("/create")
     public void addNewExpense(@RequestBody ExpenseAddRequest expenseAddRequest) {
         expenseService.addNewExpenseRecord(expenseAddRequest);
     }
@@ -48,7 +49,7 @@ public class ExpenseTrackerController {
      * usage: manual - schedule
      * */
     @GetMapping("/fetch-daily")
-    public ResponseBuilder<List<ExpenseTracker>> responseExpensesDaily() {
+    public ResponseBuilder<ExpenseTrackerListResp> responseExpensesDaily() {
         return expenseService.fetchDaily(true);
     }
 
