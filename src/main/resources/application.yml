@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: expense_tracker
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres
+    username: postgres.eqgclhodynrgjbwijznz
+    password: 093606872Tanghai$
+
+server:
+  servlet:
+    context-path: /exp_tkr
+  port: 8080
