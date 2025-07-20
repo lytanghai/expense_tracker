@@ -10,9 +10,9 @@ spring:
     driver-class-name: org.postgresql.Driver
 
     # Supabase
-#    url: jdbc:postgresql://aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres
-#    username: postgres.eqgclhodynrgjbwijznz
-#    password: 093606872Tanghai$
+#    url: ${DB_HOST}
+#    username: ${DB_USERNAME}
+#    password: ${DB_PASSWORD}
 #
     #Work
     url: jdbc:postgresql://localhost:5432/configure
@@ -25,10 +25,10 @@ spring:
 #    password: admin
 
 telegram:
-  bot-token: 6146637472:AAEF3MsqfUsFD4PXc81Ro4tYpiNyu4ajwQI
-  chat-id: 678134373
+  bot-token: ${TELEGRAM_BOT_TOKEN}
+  chat-id: ${TELEGRAM_CHAT_ID}
 
 server:
   servlet:
-    context-path: /exp_tkr
+    context-path: /expense_tracker
   port: 8080
