@@ -8,12 +8,12 @@ spring:
           enabled: true
   datasource:
     driver-class-name: org.postgresql.Driver
-  jpa:
-    open-in-view: false
     # Supabase
     url: ${DB_HOST}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
+  jpa:
+    open-in-view: false
 
     #Work
 #    url: jdbc:postgresql://localhost:5432/configure
