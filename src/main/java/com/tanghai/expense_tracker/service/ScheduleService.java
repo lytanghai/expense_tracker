@@ -4,5 +4,5 @@ public interface ScheduleService {
     void fetchMonthly();
     void fetchDaily();
     void cleanup();
-    void wakeUp();
+//    void wakeUp();
 }
