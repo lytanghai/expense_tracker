@@ -125,10 +125,10 @@ public class ScheduleServiceImpl implements ScheduleService {
                 current.substring(0, 10),
                 current.substring(11, 19).concat(" ").concat(DateUtil.getAmPm(current.substring(11, 19)))));
     }
-
-    @Override
-    @Scheduled(fixedRate = 870000)
-    public void wakeUp() {
-        System.out.println("Wake up called");
-    }
+//
+//    @Override
+//    @Scheduled(fixedRate = 870000)
+//    public void wakeUp() {
+//        System.out.println("Wake up called");
+//    }
 }

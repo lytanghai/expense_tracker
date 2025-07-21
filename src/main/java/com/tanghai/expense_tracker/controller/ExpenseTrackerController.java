@@ -61,4 +61,8 @@ public class ExpenseTrackerController {
         expenseService.cleanup();
     }
 
+    @GetMapping("/wakeup")
+    public void wakeUp() {
+        System.out.println("Wake up called");
+    }
 }
