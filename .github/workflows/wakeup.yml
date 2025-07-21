@@ -3,8 +3,8 @@ name: Wake Up Render App
 on:
   schedule:
     # Run every 14 minutes between 8:00 and 23:00 UTC
-    # Note: adjust time zone as needed (GitHub uses UTC)
     - cron: "*/14 8-23 * * *"
+  workflow_dispatch:  # Enables manual trigger
 
 jobs:
   wakeup:
@@ -13,4 +13,4 @@ jobs:
     steps:
       - name: Wake up Render app by calling API
         run: |
-          curl -X GET https://expense-tracker-istq.onrender.com/expense_tracker/expense/wakeup
+          curl --fail -X GET https://expense-tracker-istq.onrender.com/expense_tracker/expense/wakeup
