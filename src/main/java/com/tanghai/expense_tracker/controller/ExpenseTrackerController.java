@@ -24,7 +24,7 @@ public class ExpenseTrackerController {
         expenseService.addNewExpenseRecord(expenseAddRequest);
     }
 
-    @PostMapping("/update/{id}")
+    @PatchMapping("/update/{id}")
     public void updateExpenseById(@PathVariable("id") Integer id, @RequestBody ExpenseAddRequest expenseUpdateRequest) {
         expenseService.updateExpenseById(id, expenseUpdateRequest);
     }

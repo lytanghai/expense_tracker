@@ -83,43 +83,62 @@ public class ExpenseServiceImpl implements ExpenseService {
 
     @Override
     public void updateExpenseById(Integer id, ExpenseAddRequest expenseUpdateRequest) {
-        if(ObjectUtils.isEmpty(id))
+        if (ObjectUtils.isEmpty(id)) {
             throw new ServiceException(ApplicationCode.W004.getCode(), ApplicationCode.W004.getMessage());
-
-        ExpenseTracker existExpense = expenseTrackerRepo.findById(id).orElse(null);
-        if(existExpense != null) {
-            existExpense.setCategory(expenseUpdateRequest.getCategory());
-            existExpense.setNote(expenseUpdateRequest.getNote());
-            existExpense.setCurrency(expenseUpdateRequest.getCurrency());
-            existExpense.setItem(expenseUpdateRequest.getItem());
-
-
-            BigDecimal reqAmount = expenseUpdateRequest.getPrice();
-
-            String reqCurrency = expenseUpdateRequest.getCurrency();
-            if(reqAmount == null || reqAmount.compareTo(BigDecimal.ZERO) <= 0)
-                throw new ServiceException(ApplicationCode.W002.getCode(), ApplicationCode.W002.getMessage());
-
-            String convertAmount = ExchangeRateUtil.convertAmount(
-                    reqAmount.toString(),
-                    reqCurrency
-            );
-            String convertedAmt = convertAmount.substring(4).replace(Static.COMMA,Static.EMPTY);
-            existExpense.setPrice(reqAmount);
-            existExpense.setConvertedPrice(convertedAmt.contains(Static.PERIOD)
-                    ? BigDecimal.valueOf(Double.parseDouble(convertAmount.substring(4)))
-                    : BigDecimal.valueOf(Long.parseLong(convertedAmt)));
-
-            existExpense.setConvertedCurrency(convertAmount.substring(0,3));
-            expenseTrackerRepo.save(existExpense);
-
-            //Cache
-            ExpenseRecordCache.removeById(id);
-            ExpenseRecordCache.add(existExpense);
-
-        } else {
-            throw new ServiceException(ApplicationCode.W005.getCode(), ApplicationCode.W005.getMessage());
         }
+
+        ExpenseTracker existExpense = expenseTrackerRepo.findById(id)
+                .orElseThrow(() -> new ServiceException(ApplicationCode.W005.getCode(), ApplicationCode.W005.getMessage()));
+
+        // Update fields only if present (PATCH behavior)
+        if (expenseUpdateRequest.getCategory() != null) {
+            existExpense.setCategory(expenseUpdateRequest.getCategory());
+        }
+
+        if (expenseUpdateRequest.getNote() != null) {
+            existExpense.setNote(expenseUpdateRequest.getNote());
+        }
+
+        if (expenseUpdateRequest.getCurrency() != null) {
+            existExpense.setCurrency(expenseUpdateRequest.getCurrency());
+        }
+
+        if (expenseUpdateRequest.getItem() != null) {
+            existExpense.setItem(expenseUpdateRequest.getItem());
+        }
+
+        BigDecimal reqAmount = expenseUpdateRequest.getPrice();
+        String reqCurrency = expenseUpdateRequest.getCurrency();
+
+        // Only do conversion if both price and currency are provided
+        if (reqAmount != null) {
+            if (reqAmount.compareTo(BigDecimal.ZERO) <= 0) {
+                throw new ServiceException(ApplicationCode.W002.getCode(), ApplicationCode.W002.getMessage());
+            }
+
+            if (reqCurrency == null) {
+                throw new ServiceException(ApplicationCode.W003.getCode(), "Currency is required when updating price.");
+            }
+
+            // Currency conversion logic
+            String convertAmount = ExchangeRateUtil.convertAmount(reqAmount.toString(), reqCurrency);
+            String convertedAmt = convertAmount.substring(4).replace(Static.COMMA, Static.EMPTY);
+
+            existExpense.setPrice(reqAmount);
+            existExpense.setConvertedPrice(
+                    convertedAmt.contains(Static.PERIOD)
+                            ? BigDecimal.valueOf(Double.parseDouble(convertAmount.substring(4)))
+                            : BigDecimal.valueOf(Long.parseLong(convertedAmt))
+            );
+            existExpense.setConvertedCurrency(convertAmount.substring(0, 3));
+        }
+
+        // Save updated record
+        expenseTrackerRepo.save(existExpense);
+
+        // Update cache
+        ExpenseRecordCache.removeById(id);
+        ExpenseRecordCache.add(existExpense);
     }
 
     @Override

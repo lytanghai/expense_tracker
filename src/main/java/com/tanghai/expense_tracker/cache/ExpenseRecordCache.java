@@ -42,13 +42,10 @@ public class ExpenseRecordCache {
     }
 
     public static void add(ExpenseTracker expenseTracker) {
-        expenseTrackerMap.put(expenseTracker.getId(), new CacheEntry(expenseTracker));
-        System.out.println("Add new Cache id: " + expenseTracker.getId());
-    }
+        expenseTrackerMap.put(expenseTracker.getId(), new CacheEntry(expenseTracker));}
 
     public static void removeById(Integer id) {
         expenseTrackerMap.remove(id);
-        System.out.println("Remove Cache id: " + id);
     }
 
     public static void removeByDateRange(String startDateStr, String endDateStr) {
@@ -57,7 +54,6 @@ public class ExpenseRecordCache {
             LocalDateTime trackerDate = LocalDateTime.parse(tracker.getExpenseDate(), DateTimeFormatter.ofPattern(DateUtil.DATE_FORMAT_2));
             return !trackerDate.isBefore(DateUtil.getMonthRange(startDateStr)) && !trackerDate.isAfter(DateUtil.getMonthRange(endDateStr));
         });
-        System.out.println("Remove Cache date range start date: " + startDateStr + "end date: " + endDateStr);
     }
 
     public static ExpenseTracker getById(Integer id) {
