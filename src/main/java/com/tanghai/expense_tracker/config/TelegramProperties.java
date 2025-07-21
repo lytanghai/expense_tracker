@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 public class TelegramProperties {
     private String botToken;
     private String chatId;
+    private boolean isEnable;
 
     public String getBotToken() {
         return botToken;
@@ -23,5 +24,13 @@ public class TelegramProperties {
 
     public void setChatId(String chatId) {
         this.chatId = chatId;
+    }
+
+    public boolean isEnable() {
+        return isEnable;
+    }
+
+    public void setEnable(boolean enable) {
+        isEnable = enable;
     }
 }

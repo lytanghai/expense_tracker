@@ -26,19 +26,19 @@ import java.util.GregorianCalendar;
 public final class DateUtil extends DateUtils {
 
     public static final String DATE_WITH_TIME_1 = "dd-MM-yyyy HH:mm:ss";
+    public static final String DATE_FORMAT_2 = "yyyy-MM-dd'T'HH:mm:ss";
 
-    public static String[] getMonthDateRange(String anyDateInMonth) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_WITH_TIME_1);
+    // Accepts "HH:mm:ss" or "H:mm:ss" (e.g. 7:05:09)
+    private static final DateTimeFormatter FORMAT = DateTimeFormatter.ofPattern("H:mm:ss");
 
-        LocalDateTime date = LocalDateTime.parse(anyDateInMonth, formatter);
+    /** Returns "AM" if 00:00:00–11:59:59, otherwise "PM". */
+    public static String getAmPm(String timeStr) {
+        LocalTime t = LocalTime.parse(timeStr, FORMAT);   // throws DateTimeParseException if bad format
+        return t.getHour() < 12 ? "AM" : "PM";
+    }
 
-        LocalDateTime startOfMonth = date.withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0);
-        LocalDateTime endOfMonth = date.with(TemporalAdjusters.lastDayOfMonth()).withHour(23).withMinute(59).withSecond(59);
-
-        return new String[]{
-                startOfMonth.format(formatter),
-                endOfMonth.format(formatter)
-        };
+    public static LocalDateTime getMonthRange(String date) {
+        return LocalDateTime.parse(date, DateTimeFormatter.ofPattern(DATE_FORMAT_2));
     }
 
     public static String[] getDayDateRange(Date date) {
@@ -46,8 +46,9 @@ public final class DateUtil extends DateUtils {
 
         // Convert java.util.Date to LocalDate
         Instant instant = date.toInstant();
-        ZoneId zoneId = ZoneId.of("Asia/Phnom_Penh"); // Cambodia timezone
-        LocalDate localDate = instant.atZone(zoneId).toLocalDate();
+        LocalDate localDate = instant
+                .atZone(ZoneId.of("Asia/Phnom_Penh"))
+                .toLocalDate();
 
         // Start and end of the day
         LocalDateTime startOfDay = localDate.atStartOfDay();
@@ -71,7 +72,6 @@ public final class DateUtil extends DateUtils {
         return new String[]{start, end};
     }
 
-
     public static String format(Date date) {
         return format(date, DATE_WITH_TIME_1);
     }
@@ -84,17 +84,9 @@ public final class DateUtil extends DateUtils {
         return date == null ? defaultValue : new SimpleDateFormat(format).format(date);
     }
 
-
     public static String convertToYearMonth(String dateStr) {
-        DateTimeFormatter inputFormat = DateTimeFormatter.ofPattern(DATE_WITH_TIME_1);
-        DateTimeFormatter outputFormat = DateTimeFormatter.ofPattern("yyyy-MM");
-
-        LocalDateTime dateTime = LocalDateTime.parse(dateStr, inputFormat);
-        return outputFormat.format(dateTime);
+        return  DateTimeFormatter.ofPattern("yyyy-MM")
+                .format(LocalDateTime.parse(dateStr, DateTimeFormatter.ofPattern(DATE_WITH_TIME_1)));
     }
-
-
-
-
 
 }

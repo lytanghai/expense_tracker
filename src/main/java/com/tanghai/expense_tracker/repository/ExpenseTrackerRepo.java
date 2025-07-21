@@ -13,7 +13,7 @@ import javax.transaction.Transactional;
 import java.util.List;
 
 @Repository
-public interface ExpenseTrackerRepo extends JpaRepository<ExpenseTracker, Integer> {
+public interface ExpenseTrackerRepo extends JpaRepository<ExpenseTracker, Integer>, ExpenseTrackerCustomRepo{
 
     @Query(value = "SELECT * FROM expense_tracker \n" +
             "    WHERE to_char(to_timestamp(expense_date, 'DD-MM-YYYY HH24:MI:SS'), 'YYYY-MM') = :month",

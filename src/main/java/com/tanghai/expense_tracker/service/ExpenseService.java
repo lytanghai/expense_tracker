@@ -7,8 +7,6 @@ import com.tanghai.expense_tracker.dto.res.PaginatedResponse;
 import com.tanghai.expense_tracker.entity.ExpenseTracker;
 import com.tanghai.expense_tracker.util.ResponseBuilder;
 
-import java.util.List;
-
 public interface ExpenseService {
 
     ResponseBuilder<PaginatedResponse<ExpenseTracker>> fetchExpenses(String month, int page, int size);
@@ -16,5 +14,6 @@ public interface ExpenseService {
 
     void deleteByIdOrDate(ExpenseDeleteRequest expenseDeleteRequest);
     void addNewExpenseRecord(ExpenseAddRequest expenseAddRequest);
+    void updateExpenseById(Integer id, ExpenseAddRequest expenseUpdateRequest);
     void cleanup();
 }

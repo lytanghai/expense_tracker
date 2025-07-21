@@ -19,7 +19,7 @@ public class TelegramController {
     }
 
     @PostMapping("/send")
-    public String sendMessage(@RequestParam String message) {
-        return telegramService.sendMessage(message);
+    public void sendMessage(@RequestParam String message) {
+         telegramService.sendMessage(message);
     }
 }
