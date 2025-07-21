@@ -1,5 +1,7 @@
 package com.tanghai.expense_tracker.entity;
 
+import com.tanghai.expense_tracker.constant.Static;
+
 import javax.persistence.*;
 import java.math.BigDecimal;
 
@@ -8,8 +10,8 @@ import java.math.BigDecimal;
 public class ExpenseTracker {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "hibernate_seq")
-    @SequenceGenerator(name = "hibernate_seq", sequenceName = "hibernate_sequence", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = Static.EXPENSE_TRACKER_SEQ)
+    @SequenceGenerator(name = Static.EXPENSE_TRACKER_SEQ , sequenceName = Static.EXPENSE_TRACKER_SEQ, allocationSize = 1)
     private Integer id;
 
     @Column(name = "expense_date")

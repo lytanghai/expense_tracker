@@ -2,9 +2,12 @@ package com.tanghai.expense_tracker.constant;
 
 public enum ApplicationCode {
 
-    W001("W001","Req Currency must not be nullor empty!"),
-    W002("W002","Req Amount must not be null or empty!"),
-    W003("W003","Req Item must not be null or empty!");
+    W001("W001","Currency must not be null or empty!"),
+    W002("W002","Amount must not be null,empty, or below 0"),
+    W003("W003","Item must not be null or empty!"),
+    W004("W004","ID must not be null or empty!"),
+    W005("W005","This record is not exist!"),
+    ;
 
     private String code;
     private String message;

@@ -9,8 +9,6 @@ import com.tanghai.expense_tracker.service.ExpenseService;
 import com.tanghai.expense_tracker.util.ResponseBuilder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/expense")
 public class ExpenseTrackerController {
@@ -24,6 +22,11 @@ public class ExpenseTrackerController {
     @PostMapping("/create")
     public void addNewExpense(@RequestBody ExpenseAddRequest expenseAddRequest) {
         expenseService.addNewExpenseRecord(expenseAddRequest);
+    }
+
+    @PostMapping("/update/{id}")
+    public void updateExpenseById(@PathVariable("id") Integer id, @RequestBody ExpenseAddRequest expenseUpdateRequest) {
+        expenseService.updateExpenseById(id, expenseUpdateRequest);
     }
 
     @PostMapping("/delete")
@@ -50,7 +53,7 @@ public class ExpenseTrackerController {
      * */
     @GetMapping("/fetch-daily")
     public ResponseBuilder<ExpenseTrackerListResp> responseExpensesDaily() {
-        return expenseService.fetchDaily(true);
+        return expenseService.fetchDaily(false); // do not enable this
     }
 
     @PostMapping("/cleanup")

@@ -5,6 +5,7 @@ public class ReportController {
     /**
      * 1. fetch total summary of daily
      * 2. fetch total summary of monthly
+     * 3. Auto delete and keep only the last 3 months
      * */
 
     /**
