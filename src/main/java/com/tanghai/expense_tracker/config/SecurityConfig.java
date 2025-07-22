@@ -28,7 +28,7 @@ public class SecurityConfig {
                 .authorizeRequests()
                 .antMatchers(
                         "/auth/login",
-                        "/expense_tracker/public/*"
+                        "/expense_tracker/public/**"
                 ).permitAll()
                 .anyRequest().authenticated()
                 .and()
