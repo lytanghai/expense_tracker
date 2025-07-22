@@ -22,7 +22,7 @@ jobs:
     steps:
       - name: Wake up Render app by calling API
         run: |
-          curl --fail -X GET https://expense-tracker-istq.onrender.com/expense_tracker/expense/wakeup
+          curl --fail -X GET https://expense-tracker-istq.onrender.com/expense_tracker/public/report/wakeup
 
   daily_trigger:
     if: github.event.schedule == '0 22 * * *'
@@ -30,7 +30,7 @@ jobs:
     steps:
       - name: Call daily 10 PM trigger
         run: |
-          curl --fail -X GET https://expense-tracker-istq.onrender.com/expense_tracker/report/trigger/trigger-daily
+          curl --fail -X GET https://expense-tracker-istq.onrender.com/expense_tracker/public/report/trigger-daily
 
   monthly_trigger:
     if: github.event.schedule == '0 22 28-31 * *'
@@ -39,7 +39,7 @@ jobs:
       - name: Call last day of month 10 PM trigger (conditional check inside)
         run: |
           if [ $(date -d tomorrow +%d) -eq 01 ]; then
-            curl --fail -X GET https://expense-tracker-istq.onrender.com/expense_tracker/trigger/trigger-monthly
+            curl --fail -X GET https://expense-tracker-istq.onrender.com/expense_tracker/public/report/trigger-daily
           else
             echo "Not the last day of the month, skipping monthly trigger."
           fi
@@ -50,4 +50,4 @@ jobs:
     steps:
       - name: Call quarterly 11:50 PM trigger
         run: |
-          curl --fail -X GET https://expense-tracker-istq.onrender.com/expense_tracker/report/trigger-cleanup
+          curl --fail -X GET https://expense-tracker-istq.onrender.com/expense_tracker/public/report/trigger-cleanup
