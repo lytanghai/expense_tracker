@@ -2,11 +2,8 @@ name: Wake Up Render App
 
 on:
   schedule:
-    # Wakeup Render app from 8:00 to 23:00 UTC
-    - cron: "0 8 * * *"             # Exactly 08:00
-    - cron: "10-59/10 8 * * *"      # Every 10 min after 8:00 (until 8:50)
-    - cron: "*/10 9-21 * * *"       # Every 10 min from 9:00 to 21:50
-    - cron: "0-50/10 22 * * *"      # Every 10 min from 22:00 to 22:50
+    # Wakeup Render app every 10 minutes from 8:00 AM to 11:50 PM UTC
+    - cron: "*/10 8-23 * * *"
 
     # Daily at 10 PM UTC
     - cron: "0 22 * * *"
@@ -16,11 +13,11 @@ on:
 
     # Quarterly at 11:50 PM UTC (last day of March, June, September, December)
     - cron: "50 23 31 3,6,9,12 *"
-  workflow_dispatch:  # Enables manual trigger
+  workflow_dispatch:
 
 jobs:
   wakeup:
-    if: github.event.schedule != null && startsWith(github.event.schedule, '*/10') || github.event.schedule == '0 8 * * *' || github.event.schedule == '10-59/10 8 * * *' || github.event.schedule == '*/10 9-21 * * *' || github.event.schedule == '0-50/10 22 * * *'
+    if: github.event.schedule != null && contains(github.event.schedule, '*/10')
     runs-on: ubuntu-latest
     steps:
       - name: Wake up Render app by calling API
@@ -41,7 +38,6 @@ jobs:
     steps:
       - name: Call last day of month 10 PM trigger (conditional check inside)
         run: |
-          # Call only if today is the last day of the month
           if [ $(date -d tomorrow +%d) -eq 01 ]; then
             curl --fail -X GET https://expense-tracker-istq.onrender.com/expense_tracker/trigger/trigger-monthly
           else
