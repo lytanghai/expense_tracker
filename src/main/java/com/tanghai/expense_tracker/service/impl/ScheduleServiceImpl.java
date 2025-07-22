@@ -7,7 +7,6 @@ import com.tanghai.expense_tracker.service.ScheduleService;
 import com.tanghai.expense_tracker.service.TelegramService;
 import com.tanghai.expense_tracker.util.DateUtil;
 import com.tanghai.expense_tracker.util.MessageFormatter;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,7 +34,6 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
-    @Scheduled(cron = "0 0 22 * * *") // ✅ 10:00 PM every day
     public void fetchDaily() {
         String[] range = DateUtil.getDayDateRange(new Date());
         List<ExpenseTracker> resultSet = expenseTrackerRepo.findAllByDateRange(range[0], range[1]);
@@ -73,7 +71,6 @@ public class ScheduleServiceImpl implements ScheduleService {
         ));
     }
     @Override
-    @Scheduled(cron = "0 0 22 L * *") // 2. At 22:00 (10 PM) on the last day of every month
     public void fetchMonthly() {
         String[] range = DateUtil.getDayDateRange(new Date());
         List<ExpenseTracker> resultSet = expenseTrackerRepo.findAllByDateRange(range[0], range[1]);
@@ -113,7 +110,6 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
-    @Scheduled(cron = "0 0 0 1 * *") // 3. Every 1st of the month at 12:00 AM
     @Transactional
     public void cleanup() {
         expenseTrackerRepo.deleteRecordsOlderThanThreeMonths();
@@ -126,9 +122,4 @@ public class ScheduleServiceImpl implements ScheduleService {
                 current.substring(11, 19).concat(" ").concat(DateUtil.getAmPm(current.substring(11, 19)))));
     }
 
-//    @Override
-//    @Scheduled(fixedRate = 870000)
-//    public void wakeUp() {
-//        System.out.println("Wake up called");
-//    }
 }
