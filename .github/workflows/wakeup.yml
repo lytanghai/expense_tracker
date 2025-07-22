@@ -2,12 +2,12 @@ name: Wake Up Render App
 
 on:
   schedule:
-    # First wake-up at exactly 8:00 AM UTC
+    # First wake-up at exactly 8:00 AM UTC (GMT)
     - cron: "0 8 * * *"
-    # Then every 14 minutes from 8:14 to 22:58
-    - cron: "*/14 8-22 * * *"
-    # Final run at 23:00 UTC
-    - cron: "0 23 * * *"
+    # Then every 10 minutes from 8:10 to 22:50 UTC (10-minute interval, but skip 8:00)
+    - cron: "10-59/10 8 * * *"
+    - cron: "*/10 9-21 * * *"
+    - cron: "0-50/10 22 * * *"
   workflow_dispatch:  # Enables manual trigger
 
 jobs:
