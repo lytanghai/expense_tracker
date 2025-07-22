@@ -23,8 +23,11 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http.csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/auth/login").permitAll() // allow login
-                .anyRequest().authenticated()           // all other endpoints need token
+                .antMatchers(
+                        "/auth/login",
+                        "/expense_tracker/public/*"
+                ).permitAll() // allow these 4 endpoints
+                .anyRequest().authenticated() // all other endpoints need token
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
