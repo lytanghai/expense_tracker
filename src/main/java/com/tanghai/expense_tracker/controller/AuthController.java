@@ -20,6 +20,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthRequest request) {
+        System.out.println("Call to login");
         if (authService.isValid(request.getUsername(), request.getPassword())) {
             String token = authService.generateToken(request.getUsername());
             return ResponseEntity.ok().body(Map.of("token", token));

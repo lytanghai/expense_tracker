@@ -21,13 +21,16 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        return http.csrf().disable()
+        return http
+                .cors()  // <== This enables Spring Security to use your CorsConfiguration
+                .and()
+                .csrf().disable()
                 .authorizeRequests()
                 .antMatchers(
                         "/auth/login",
                         "/expense_tracker/public/*"
-                ).permitAll() // allow these 4 endpoints
-                .anyRequest().authenticated() // all other endpoints need token
+                ).permitAll()
+                .anyRequest().authenticated()
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
