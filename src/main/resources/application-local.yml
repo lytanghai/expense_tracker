@@ -1,0 +1,39 @@
+spring:
+  application:
+    name: expense_tracker
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    #Work
+    url: jdbc:postgresql://localhost:5432/configure
+    username: postgres
+    password: 309927605
+
+  jpa:
+    open-in-view: false
+
+    #Personal
+#    url: jdbc:postgresql://localhost:5432/merchant
+#    username: postgres
+#    password: admin
+
+jwt:
+  secret_key: YourSuperSecretKeyThatIsAtLeast32CharsLong!
+  auth:
+    users:
+      admin_usr: tanghai
+      admin_pwd: 093606872
+
+telegram:
+  enable: false
+  bot-token: 123
+  chat-id: 123
+
+server:
+  servlet:
+    context-path: /expense_tracker
+  port: 8080

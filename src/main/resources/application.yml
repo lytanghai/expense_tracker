@@ -1,4 +1,6 @@
 spring:
+#  profiles:
+#    active: local
   application:
     name: expense_tracker
   cloud:
@@ -15,15 +17,12 @@ spring:
   jpa:
     open-in-view: ${JPA_VIEW_MODE}
 
-    #Work
-#    url: jdbc:postgresql://localhost:5432/configure
-#    username: postgres
-#    password: 309927605
-
-    #Personal
-#    url: jdbc:postgresql://localhost:5432/merchant
-#    username: postgres
-#    password: admin
+jwt:
+  secret_key: ${JWT_SECRET_KEY}
+  auth:
+    users:
+      admin_usr: ${admin_username}
+      admin_pwd: ${admin_password}
 
 telegram:
   enable: ${TELEGRAM_BOT_ENABLE}

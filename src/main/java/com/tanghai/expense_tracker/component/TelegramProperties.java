@@ -1,4 +1,4 @@
-package com.tanghai.expense_tracker.config;
+package com.tanghai.expense_tracker.component;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;

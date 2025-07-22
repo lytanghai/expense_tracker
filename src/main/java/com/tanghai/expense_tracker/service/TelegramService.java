@@ -1,6 +1,6 @@
 package com.tanghai.expense_tracker.service;
 
-import com.tanghai.expense_tracker.config.TelegramProperties;
+import com.tanghai.expense_tracker.component.TelegramProperties;
 import com.tanghai.expense_tracker.constant.Static;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
