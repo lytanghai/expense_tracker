@@ -17,8 +17,8 @@ spring:
   jpa:
     open-in-view: ${JPA_VIEW_MODE}
 
-render:
-  web_url: ${SERVER_UR}
+backend_server:
+  web_url: ${SERVER_URL}
 
 jwt:
   secret_key: ${JWT_SECRET_KEY}
