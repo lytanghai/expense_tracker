@@ -27,8 +27,9 @@ public class SecurityConfig {
                 .csrf().disable()
                 .authorizeRequests()
                 .antMatchers(
-                        "/auth/login",
-                        "/expense_tracker/public/**"
+                        "/public/auth/login",
+                        "/public/report/*",
+                        "/public/telegram/send"
                 ).permitAll()
                 .anyRequest().authenticated()
                 .and()

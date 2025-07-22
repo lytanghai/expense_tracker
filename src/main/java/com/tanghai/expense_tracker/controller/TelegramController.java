@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/public/api/telegram")
+@RequestMapping("/public/telegram")
 public class TelegramController {
 
     private final TelegramService telegramService;
