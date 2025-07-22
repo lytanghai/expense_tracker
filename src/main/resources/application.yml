@@ -21,8 +21,8 @@ jwt:
   secret_key: ${JWT_SECRET_KEY}
   auth:
     users:
-      admin_usr: ${admin_username}
-      admin_pwd: ${admin_password}
+      admin_usr: ${ADMIN_USERNAME}
+      admin_pwd: ${ADMIN_PASSWORD}
 
 telegram:
   enable: ${TELEGRAM_BOT_ENABLE}
