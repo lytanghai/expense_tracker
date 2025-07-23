@@ -4,6 +4,7 @@ import com.tanghai.expense_tracker.entity.ExpenseTracker;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,7 +14,7 @@ import javax.transaction.Transactional;
 import java.util.List;
 
 @Repository
-public interface ExpenseTrackerRepo extends JpaRepository<ExpenseTracker, Integer>, ExpenseTrackerCustomRepo{
+public interface ExpenseTrackerRepo extends JpaRepository<ExpenseTracker, Integer>, ExpenseTrackerCustomRepo, JpaSpecificationExecutor<ExpenseTracker> {
 
     @Query(value = "SELECT * FROM expense_tracker \n" +
             "    WHERE to_char(to_timestamp(expense_date, 'DD-MM-YYYY HH24:MI:SS'), 'YYYY-MM') = :month",

@@ -2,11 +2,15 @@ package com.tanghai.expense_tracker.controller;
 
 import com.tanghai.expense_tracker.dto.req.ExpenseAddRequest;
 import com.tanghai.expense_tracker.dto.req.ExpenseDeleteRequest;
+import com.tanghai.expense_tracker.dto.req.ExpenseFilterRequest;
+import com.tanghai.expense_tracker.dto.res.ExpenseResponse;
 import com.tanghai.expense_tracker.dto.res.ExpenseTrackerListResp;
 import com.tanghai.expense_tracker.dto.res.PaginatedResponse;
 import com.tanghai.expense_tracker.entity.ExpenseTracker;
 import com.tanghai.expense_tracker.service.ExpenseService;
 import com.tanghai.expense_tracker.util.ResponseBuilder;
+import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -32,6 +36,11 @@ public class ExpenseTrackerController {
     @PostMapping("/delete")
     public void deleteExpenseByIdOrDate(@RequestBody ExpenseDeleteRequest expenseDeleteRequest) {
         expenseService.deleteByIdOrDate(expenseDeleteRequest);  // e.g., "2025-07-12" for date
+    }
+
+    @PostMapping("/filter")
+    public ResponseEntity<Page<ExpenseResponse>> filterExpenses(@RequestBody ExpenseFilterRequest request) {
+        return ResponseEntity.ok(expenseService.getFilteredExpenses(request));
     }
 
     /**

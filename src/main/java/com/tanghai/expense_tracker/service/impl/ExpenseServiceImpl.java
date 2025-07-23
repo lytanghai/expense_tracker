@@ -5,6 +5,8 @@ import com.tanghai.expense_tracker.constant.ApplicationCode;
 import com.tanghai.expense_tracker.constant.Static;
 import com.tanghai.expense_tracker.dto.req.ExpenseAddRequest;
 import com.tanghai.expense_tracker.dto.req.ExpenseDeleteRequest;
+import com.tanghai.expense_tracker.dto.req.ExpenseFilterRequest;
+import com.tanghai.expense_tracker.dto.res.ExpenseResponse;
 import com.tanghai.expense_tracker.dto.res.ExpenseTrackerListResp;
 import com.tanghai.expense_tracker.dto.res.PaginatedResponse;
 import com.tanghai.expense_tracker.entity.ExpenseTracker;
@@ -12,6 +14,7 @@ import com.tanghai.expense_tracker.exception.ServiceException;
 import com.tanghai.expense_tracker.repository.ExpenseTrackerRepo;
 import com.tanghai.expense_tracker.repository.impl.ExpenseTrackerCustomRepoImpl;
 import com.tanghai.expense_tracker.service.ExpenseService;
+import com.tanghai.expense_tracker.service.ExpenseTrackerSpecification;
 import com.tanghai.expense_tracker.util.AmountUtil;
 import com.tanghai.expense_tracker.util.DateUtil;
 import com.tanghai.expense_tracker.util.ExchangeRateUtil;
@@ -248,6 +251,14 @@ public class ExpenseServiceImpl implements ExpenseService {
             return ResponseBuilder.success(paginated);
         }
         return ResponseBuilder.success(null);
+    }
+
+    @Override
+    public Page<ExpenseResponse> getFilteredExpenses(ExpenseFilterRequest request) {
+        Pageable pageable = PageRequest.of(request.getPage(), request.getSize(), Sort.by("expenseDate").descending());
+
+        return expenseTrackerRepo.findAll(ExpenseTrackerSpecification.filter(request), pageable)
+                .map(ExpenseResponse::new);
     }
 
 }
