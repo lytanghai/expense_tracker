@@ -64,8 +64,8 @@ public class ExpenseTrackerController {
      * */
     @GetMapping("/fetch-by-date")
     public ResponseBuilder<PaginatedResponse<ExpenseTracker>> responseExpensesByDate(
-            @RequestParam(defaultValue = "") String date1,
-            @RequestParam(defaultValue = "") String date2,
+            @RequestParam(name = "date1", defaultValue = "") String date1,
+            @RequestParam(name = "date2", defaultValue = "") String date2,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         return expenseService.fetchExpensesByDate(date1, date2, page, size);
