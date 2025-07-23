@@ -23,6 +23,16 @@ public interface ExpenseTrackerRepo extends JpaRepository<ExpenseTracker, Intege
             nativeQuery = true)
     Page<ExpenseTracker> findByMonth(String month, Pageable pageable);
 
+    @Query(value = "SELECT * FROM expense_tracker " +
+            "WHERE to_timestamp(expense_date, 'DD-MM-YYYY HH24:MI:SS') BETWEEN CAST(:startDate AS timestamp) AND CAST(:endDate AS timestamp)",
+            countQuery = "SELECT count(*) FROM expense_tracker " +
+                    "WHERE to_timestamp(expense_date, 'DD-MM-YYYY HH24:MI:SS') BETWEEN CAST(:startDate AS timestamp) AND CAST(:endDate AS timestamp)",
+            nativeQuery = true)
+    Page<ExpenseTracker> findByDateRange(@Param("startDate") String startDate,
+                                         @Param("endDate") String endDate,
+                                         Pageable pageable);
+
+
     @Query(value = "SELECT * FROM expense_tracker\n" +
             "    WHERE to_timestamp(expense_date, 'DD-MM-YYYY HH24:MI:SS')\n" +
             "          BETWEEN to_timestamp(:startDate, 'DD-MM-YYYY HH24:MI:SS')\n" +

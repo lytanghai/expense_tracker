@@ -43,17 +43,32 @@ public class ExpenseTrackerController {
         return ResponseEntity.ok(expenseService.getFilteredExpenses(request));
     }
 
+
     /**
      * Fetch By monthly
      * month = 2025-07
      * usage: manual - schedule
      * */
     @GetMapping("/fetch-monthly")
-    public ResponseBuilder<PaginatedResponse<ExpenseTracker>> responseExpenses(
+    public ResponseBuilder<PaginatedResponse<ExpenseTracker>> responseMonthlyExpenses(
             @RequestParam(defaultValue = "") String month,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        return expenseService.fetchExpenses(month, page, size);
+        return expenseService.fetchMonthlyExpenses(month, page, size);
+    }
+
+    /**
+     * Fetch By date
+     * date1 = 2025-07-23
+     * date1 = 2025-07-23 && date2 = 2025-07-25
+     * */
+    @GetMapping("/fetch-by-date")
+    public ResponseBuilder<PaginatedResponse<ExpenseTracker>> responseExpensesByDate(
+            @RequestParam(defaultValue = "") String date1,
+            @RequestParam(defaultValue = "") String date2,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return expenseService.fetchExpensesByDate(date1, date2, page, size);
     }
 
     /**

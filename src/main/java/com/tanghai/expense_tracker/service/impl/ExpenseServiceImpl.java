@@ -15,7 +15,6 @@ import com.tanghai.expense_tracker.repository.ExpenseTrackerRepo;
 import com.tanghai.expense_tracker.repository.impl.ExpenseTrackerCustomRepoImpl;
 import com.tanghai.expense_tracker.service.ExpenseService;
 import com.tanghai.expense_tracker.service.ExpenseTrackerSpecification;
-import com.tanghai.expense_tracker.util.AmountUtil;
 import com.tanghai.expense_tracker.util.DateUtil;
 import com.tanghai.expense_tracker.util.ExchangeRateUtil;
 import com.tanghai.expense_tracker.util.ResponseBuilder;
@@ -29,9 +28,10 @@ import org.springframework.util.ObjectUtils;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -220,7 +220,7 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
 
     @Override
-    public ResponseBuilder<PaginatedResponse<ExpenseTracker>> fetchExpenses(String month, int page, int size) {
+    public ResponseBuilder<PaginatedResponse<ExpenseTracker>> fetchMonthlyExpenses(String month, int page, int size) {
         if(month.isEmpty()) {
             month = DateUtil.format(new Date());
             month = DateUtil.convertToYearMonth(month);
@@ -251,6 +251,65 @@ public class ExpenseServiceImpl implements ExpenseService {
             return ResponseBuilder.success(paginated);
         }
         return ResponseBuilder.success(null);
+    }
+
+    @Override
+    public ResponseBuilder<PaginatedResponse<ExpenseTracker>> fetchExpensesByDate(String date1, String date2, int page, int size) {
+        try {
+            DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+            String startDate;
+            String endDate;
+
+            if (date1 != null && !date1.isEmpty()) {
+                LocalDate start = LocalDate.parse(date1, inputFormatter);
+                startDate = start.atStartOfDay().format(outputFormatter);
+            } else {
+                return null;
+            }
+
+            if (date2 != null && !date2.isEmpty()) {
+                LocalDate end = LocalDate.parse(date2, inputFormatter);
+                endDate = end.atTime(23, 59, 59).format(outputFormatter);
+            } else {
+                // If only one date is provided, treat it as a single-day query
+                LocalDate single = LocalDate.parse(date1, inputFormatter);
+                endDate = single.atTime(23, 59, 59).format(outputFormatter);
+            }
+
+            Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+            Page<ExpenseTracker> expensePage = expenseTrackerRepo.findByDateRange(startDate, endDate, pageable);
+
+            if (!expensePage.getContent().isEmpty()) {
+                List<ExpenseTracker> expenseDTOs = expensePage.getContent()
+                        .stream()
+                        .map(expense -> new ExpenseTracker(
+                                expense.getId(),
+                                expense.getItem(),
+                                expense.getCategory(),
+                                expense.getPrice(),
+                                expense.getExpenseDate(),
+                                expense.getCurrency()
+                        ))
+                        .collect(Collectors.toList());
+
+                PaginatedResponse<ExpenseTracker> paginated = new PaginatedResponse<>();
+                paginated.setContent(expenseDTOs);
+                paginated.setPage(expensePage.getNumber());
+                paginated.setSize(expensePage.getSize());
+                paginated.setTotalElements(expensePage.getTotalElements());
+                paginated.setTotalPages(expensePage.getTotalPages());
+                paginated.setLast(expensePage.isLast());
+
+                return ResponseBuilder.success(paginated);
+            }
+
+            return ResponseBuilder.success(null);
+
+        } catch ( Exception e) {
+            return null;
+        }
     }
 
     @Override
