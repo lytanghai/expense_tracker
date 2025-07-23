@@ -2,16 +2,16 @@ name: Wake Up Render App
 
 on:
   schedule:
-    # Wakeup Render app every 10 minutes from 1:00 AM to 4:50 PM UTC (8:00 AM – 11:50 PM local)
+    # Wake up Render app every 10 minutes from 1:00 AM to 4:50 PM UTC (8:00 AM – 11:50 PM UTC+7)
     - cron: "*/10 1-16 * * *"
 
     # Daily at 3:00 PM UTC (10:00 PM local time)
     - cron: "0 15 * * *"
 
-    # Monthly at 3:00 PM UTC on 28th to 31st (last few days of month)
+    # Monthly at 3:00 PM UTC on the 28th to 31st
     - cron: "0 15 28-31 * *"
 
-    # Quarterly at 4:50 PM UTC on March, June, Sept, Dec 31 (11:50 PM local)
+    # Quarterly at 4:50 PM UTC on Mar 31, Jun 31, Sep 31, Dec 31 (11:50 PM UTC+7)
     - cron: "50 16 31 3,6,9,12 *"
 
   workflow_dispatch:
@@ -20,36 +20,37 @@ jobs:
   trigger:
     runs-on: ubuntu-latest
     steps:
+
+      # Wake up app every 10 minutes
       - name: Wake up Render app
+        if: github.event.schedule == '*/10 1-16 * * *'
         run: |
           echo "Waking up Render app..."
           curl --fail -X GET https://expense-tracker-istq.onrender.com/expense_tracker/public/report/wakeup
 
+      # Daily 10 PM local (3 PM UTC) trigger
       - name: Daily 10 PM trigger
+        if: github.event.schedule == '0 15 * * *'
         run: |
-          HOUR=$(date -u +"%H")
-          if [ "$HOUR" -eq 15 ]; then
-            echo "Running daily trigger"
-            curl --fail -X GET https://expense-tracker-istq.onrender.com/expense_tracker/public/report/trigger-daily
-          fi
+          echo "Running daily trigger..."
+          curl --fail -X GET https://expense-tracker-istq.onrender.com/expense_tracker/public/report/trigger-daily
 
+      # Last day of the month trigger
       - name: Monthly last-day trigger
+        if: github.event.schedule == '0 15 28-31 * *'
         run: |
-          DAY=$(date -u +%d)
+          echo "Checking if today is the last day of the month..."
           TOMORROW=$(date -u -d tomorrow +%d)
-          HOUR=$(date -u +"%H")
-          if [ "$HOUR" -eq 15 ] && [ "$TOMORROW" -eq 01 ]; then
-            echo "Running end-of-month trigger"
+          if [ "$TOMORROW" -eq 01 ]; then
+            echo "Today is the last day of the month — triggering monthly report."
             curl --fail -X GET https://expense-tracker-istq.onrender.com/expense_tracker/public/report/trigger-daily
+          else
+            echo "Today is not the last day of the month — skipping."
           fi
 
+      # Quarterly trigger at 4:50 PM UTC on 31st of Mar, Jun, Sep, Dec
       - name: Quarterly trigger
+        if: github.event.schedule == '50 16 31 3,6,9,12 *'
         run: |
-          HOUR=$(date -u +"%H")
-          MIN=$(date -u +"%M")
-          MONTH=$(date -u +"%m")
-          DAY=$(date -u +"%d")
-          if [ "$HOUR" -eq 16 ] && [ "$MIN" -eq 50 ] && [[ "$MONTH" =~ ^(03|06|09|12)$ ]] && [ "$DAY" -eq 31 ]; then
-            echo "Running quarterly cleanup"
-            curl --fail -X GET https://expense-tracker-istq.onrender.com/expense_tracker/public/report/trigger-cleanup
-          fi
+          echo "Running quarterly cleanup trigger..."
+          curl --fail -X GET https://expense-tracker-istq.onrender.com/expense_tracker/public/report/trigger-cleanup
