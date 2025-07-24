@@ -3,6 +3,7 @@ package com.tanghai.expense_tracker.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -11,6 +12,11 @@ public class WebConfig {
 
     @Value("${backend_server.web_url}")
     private String SERVER_URL;
+
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
 
     @Bean
     public WebMvcConfigurer corsConfigurer() {
