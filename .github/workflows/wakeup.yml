@@ -1,4 +1,4 @@
-name: "Close stale issues"
+name: "expense_cron"
 on:
   schedule:
   - cron: "10 8-23 * * *"
@@ -10,4 +10,5 @@ jobs:
       - name: Wake up Render app
         run: |
           echo "Waking up Render app..."
+          echo "Current UTC time: $(date -u)"
           curl --fail -X GET https://expense-tracker-istq.onrender.com/expense_tracker/public/report/wakeup
