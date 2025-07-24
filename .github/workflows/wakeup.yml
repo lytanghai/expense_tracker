@@ -1,67 +1,67 @@
-name: "Expense Tracker Cron Jobs"
-
-on:
-  schedule:
-    # Wakeup App: every 10 minutes from 8 AM to 11:50 PM (UTC+7 → UTC 1–16)
-    - cron: "*/10 1-16 * * *"
-
-    # Daily Report: every day at 10:00 PM Phnom Penh time (UTC 15:00)
-    - cron: "0 15 * * *"
-
-    # Monthly Report: 10:30 PM Phnom Penh time (UTC 15:30) on days 28–31
-    - cron: "30 15 28-31 * *"
-
-    # Quarterly Cleanup: 10:50 PM Phnom Penh time (UTC 15:50) on Mar/Jun/Sep/Dec 31
-    - cron: "50 15 31 3,6,9,12 *"
-
-  workflow_dispatch: # Allow manual trigger
-
-jobs:
-  expense_cron:
-    runs-on: ubuntu-latest
-    steps:
-      - name: 🔁 Wakeup App (every 10 min)
-        run: |
-          echo "Running Wakeup API"
-          echo "Current date and time: $(date)"
-          curl --fail -X GET https://expense-tracker-istq.onrender.com/expense_tracker/public/report/wakeup
-
-      - name: 📊 Trigger Daily Report (only if 10 PM UTC+7)
-        run: |
-          HOUR=$(date -u +"%H")
-          if [ "$HOUR" -eq 15 ]; then
-            echo "Triggering Daily Report"
-            echo "Current date and time: $(date)"
-            curl --fail -X GET https://expense-tracker-istq.onrender.com/expense_tracker/public/report/trigger-daily
-          else
-            echo "Skipping Daily Report"
-          fi
-
-      - name: 📅 Trigger Monthly Report (only if last day)
-        run: |
-          HOUR=$(date -u +"%H")
-          MIN=$(date -u +"%M")
-          DAY=$(date -u +%d)
-          TOMORROW=$(date -u -d tomorrow +%d)
-          if [ "$HOUR" -eq 15 ] && [ "$MIN" -eq 30 ] && [ "$TOMORROW" = "01" ]; then
-            echo "Current date and time: $(date)"
-            echo "Triggering Monthly Report"
-            curl --fail -X GET https://expense-tracker-istq.onrender.com/expense_tracker/public/report/trigger-monthly
-          else
-            echo "Skipping Monthly Report"
-          fi
-
-      - name: 🧹 Trigger Quarterly Cleanup (only if 3rd month end)
-        run: |
-          HOUR=$(date -u +"%H")
-          MIN=$(date -u +"%M")
-          DAY=$(date -u +"%d")
-          MONTH=$(date -u +"%m")
-          if [ "$HOUR" -eq 15 ] && [ "$MIN" -eq 50 ] && [ "$DAY" -eq 31 ] && [[ "$MONTH" =~ ^(03|06|09|12)$ ]]; then
-            echo "Triggering Quarterly Cleanup"
-            echo "Current date and time: $(date)"
-
-            curl --fail -X GET https://expense-tracker-istq.onrender.com/expense_tracker/public/report/trigger-cleanup
-          else
-            echo "Skipping Quarterly Cleanup"
-          fi
+#name: "Expense Tracker Cron Jobs"
+#
+#on:
+#  schedule:
+#    # Wakeup App: every 10 minutes from 8 AM to 11:50 PM (UTC+7 → UTC 1–16)
+#    - cron: "*/10 1-16 * * *"
+#
+#    # Daily Report: every day at 10:00 PM Phnom Penh time (UTC 15:00)
+#    - cron: "0 15 * * *"
+#
+#    # Monthly Report: 10:30 PM Phnom Penh time (UTC 15:30) on days 28–31
+#    - cron: "30 15 28-31 * *"
+#
+#    # Quarterly Cleanup: 10:50 PM Phnom Penh time (UTC 15:50) on Mar/Jun/Sep/Dec 31
+#    - cron: "50 15 31 3,6,9,12 *"
+#
+#  workflow_dispatch: # Allow manual trigger
+#
+#jobs:
+#  expense_cron:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: 🔁 Wakeup App (every 10 min)
+#        run: |
+#          echo "Running Wakeup API"
+#          echo "Current date and time: $(date)"
+#          curl --fail -X GET https://expense-tracker-istq.onrender.com/expense_tracker/public/report/wakeup
+#
+#      - name: 📊 Trigger Daily Report (only if 10 PM UTC+7)
+#        run: |
+#          HOUR=$(date -u +"%H")
+#          if [ "$HOUR" -eq 15 ]; then
+#            echo "Triggering Daily Report"
+#            echo "Current date and time: $(date)"
+#            curl --fail -X GET https://expense-tracker-istq.onrender.com/expense_tracker/public/report/trigger-daily
+#          else
+#            echo "Skipping Daily Report"
+#          fi
+#
+#      - name: 📅 Trigger Monthly Report (only if last day)
+#        run: |
+#          HOUR=$(date -u +"%H")
+#          MIN=$(date -u +"%M")
+#          DAY=$(date -u +%d)
+#          TOMORROW=$(date -u -d tomorrow +%d)
+#          if [ "$HOUR" -eq 15 ] && [ "$MIN" -eq 30 ] && [ "$TOMORROW" = "01" ]; then
+#            echo "Current date and time: $(date)"
+#            echo "Triggering Monthly Report"
+#            curl --fail -X GET https://expense-tracker-istq.onrender.com/expense_tracker/public/report/trigger-monthly
+#          else
+#            echo "Skipping Monthly Report"
+#          fi
+#
+#      - name: 🧹 Trigger Quarterly Cleanup (only if 3rd month end)
+#        run: |
+#          HOUR=$(date -u +"%H")
+#          MIN=$(date -u +"%M")
+#          DAY=$(date -u +"%d")
+#          MONTH=$(date -u +"%m")
+#          if [ "$HOUR" -eq 15 ] && [ "$MIN" -eq 50 ] && [ "$DAY" -eq 31 ] && [[ "$MONTH" =~ ^(03|06|09|12)$ ]]; then
+#            echo "Triggering Quarterly Cleanup"
+#            echo "Current date and time: $(date)"
+#
+#            curl --fail -X GET https://expense-tracker-istq.onrender.com/expense_tracker/public/report/trigger-cleanup
+#          else
+#            echo "Skipping Quarterly Cleanup"
+#          fi
