@@ -1,52 +1,14 @@
-name: Wake Up Render App
+name: Daily API Wakeup
 
 on:
   schedule:
-    # Every 10 minutes from 8:00 to 23:50 Phnom Penh time (1:00–16:50 UTC)
+    # Every 10 minutes between 1:00 AM and 4:59 PM UTC (which is 8 AM to 11 PM Phnom Penh)
     - cron: "*/10 1-16 * * *"
 
-    # Daily at 10:00 PM Phnom Penh (3:00 PM UTC)
-    - cron: "0 15 * * *"
-
-    # Monthly on last day at 10:30 PM Phnom Penh (3:30 PM UTC)
-    - cron: "30 15 28-31 * *"
-
-    # Quarterly at 10:50 PM Phnom Penh (3:50 PM UTC) on 31st of Mar, Jun, Sep, Dec
-    - cron: "50 15 31 3,6,9,12 *"
-
-  workflow_dispatch:
-
 jobs:
-  trigger:
+  call_api:
     runs-on: ubuntu-latest
     steps:
-
-      - name: Wake up Render app
-        if: startsWith(github.event.schedule, '*/10')
+      - name: Call Expense Tracker Wakeup API
         run: |
-          echo "Waking up Render app (08:00–23:50 Phnom Penh)..."
-          curl --fail -X GET https://expense-tracker-istq.onrender.com/expense_tracker/public/report/wakeup
-
-      - name: Daily trigger at 10 PM Phnom Penh
-        if: github.event.schedule == '0 15 * * *'
-        run: |
-          echo "Running daily trigger (10:00 PM Phnom Penh)..."
-          curl --fail -X GET https://expense-tracker-istq.onrender.com/expense_tracker/public/report/trigger-daily
-
-      - name: Monthly trigger (last day at 10:30 PM Phnom Penh)
-        if: github.event.schedule == '30 15 28-31 * *'
-        run: |
-          echo "Checking if today is the last day of the month..."
-          TOMORROW=$(date -u -d tomorrow +%d)
-          if [ "$TOMORROW" -eq 01 ]; then
-            echo "Today is the last day of the month — triggering monthly report."
-            curl --fail -X GET https://expense-tracker-istq.onrender.com/expense_tracker/public/report/trigger-daily
-          else
-            echo "Today is not the last day of the month — skipping."
-          fi
-
-      - name: Quarterly cleanup trigger (10:50 PM Phnom Penh)
-        if: github.event.schedule == '50 15 31 3,6,9,12 *'
-        run: |
-          echo "Running quarterly cleanup trigger (10:50 PM Phnom Penh)..."
-          curl --fail -X GET https://expense-tracker-istq.onrender.com/expense_tracker/public/report/trigger-cleanup
+          curl -X GET https://expense-tracker-istq.onrender.com/expense_tracker/public/report/wakeup
