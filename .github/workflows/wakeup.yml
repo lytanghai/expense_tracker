@@ -1,28 +1,13 @@
-name: Wakeup API Every 10 Minutes (8AM–11PM Phnom Penh)
-
+name: "Close stale issues"
 on:
   schedule:
-    - cron: '0,10,20,30,40,50 1 * * *'   # 08:00–08:50 AM Phnom Penh
-    - cron: '0,10,20,30,40,50 2 * * *'
-    - cron: '0,10,20,30,40,50 3 * * *'
-    - cron: '0,10,20,30,40,50 4 * * *'
-    - cron: '0,10,20,30,40,50 5 * * *'
-    - cron: '0,10,20,30,40,50 6 * * *'
-    - cron: '0,10,20,30,40,50 7 * * *'
-    - cron: '0,10,20,30,40,50 8 * * *'
-    - cron: '0,10,20,30,40,50 9 * * *'
-    - cron: '0,10,20,30,40,50 10 * * *'
-    - cron: '0,10,20,30,40,50 11 * * *'
-    - cron: '0,10,20,30,40,50 12 * * *'
-    - cron: '0,10,20,30,40,50 13 * * *'
-    - cron: '0,10,20,30,40,50 14 * * *'
-    - cron: '0,10,20,30,40,50 15 * * *'
-    - cron: '0,10,20,30,40,50 16 * * *'  # 11:00–11:50 PM Phnom Penh
+  - cron: "10 8-23 * * *"
 
 jobs:
-  call-api:
+  stale:
     runs-on: ubuntu-latest
     steps:
-      - name: Call Wakeup API
+      - name: Wake up Render app
         run: |
-          curl -s -X GET "https://expense-tracker-istq.onrender.com/expense_tracker/public/report/wakeup"
+          echo "Waking up Render app..."
+          curl --fail -X GET https://expense-tracker-istq.onrender.com/expense_tracker/public/report/wakeup
