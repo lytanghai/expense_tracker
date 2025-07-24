@@ -1,14 +1,28 @@
-name: Daily API Wakeup
+name: Wakeup API Every 10 Minutes (8AM–11PM Phnom Penh)
 
 on:
   schedule:
-    # Every 10 minutes between 1:00 AM and 4:59 PM UTC (which is 8 AM to 11 PM Phnom Penh)
-    - cron: "*/10 1-16 * * *"
+    - cron: '0,10,20,30,40,50 1 * * *'   # 08:00–08:50 AM Phnom Penh
+    - cron: '0,10,20,30,40,50 2 * * *'
+    - cron: '0,10,20,30,40,50 3 * * *'
+    - cron: '0,10,20,30,40,50 4 * * *'
+    - cron: '0,10,20,30,40,50 5 * * *'
+    - cron: '0,10,20,30,40,50 6 * * *'
+    - cron: '0,10,20,30,40,50 7 * * *'
+    - cron: '0,10,20,30,40,50 8 * * *'
+    - cron: '0,10,20,30,40,50 9 * * *'
+    - cron: '0,10,20,30,40,50 10 * * *'
+    - cron: '0,10,20,30,40,50 11 * * *'
+    - cron: '0,10,20,30,40,50 12 * * *'
+    - cron: '0,10,20,30,40,50 13 * * *'
+    - cron: '0,10,20,30,40,50 14 * * *'
+    - cron: '0,10,20,30,40,50 15 * * *'
+    - cron: '0,10,20,30,40,50 16 * * *'  # 11:00–11:50 PM Phnom Penh
 
 jobs:
-  call_api:
+  call-api:
     runs-on: ubuntu-latest
     steps:
-      - name: Call Expense Tracker Wakeup API
+      - name: Call Wakeup API
         run: |
-          curl -X GET https://expense-tracker-istq.onrender.com/expense_tracker/public/report/wakeup
+          curl -s -X GET "https://expense-tracker-istq.onrender.com/expense_tracker/public/report/wakeup"
