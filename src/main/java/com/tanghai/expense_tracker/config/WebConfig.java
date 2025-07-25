@@ -32,29 +32,15 @@ public class WebConfig {
         return builder.build();
     }
 
-//    @Bean
-//    public WebMvcConfigurer corsConfigurer() {
-//        return new WebMvcConfigurer() {
-//            @Override
-//            public void addCorsMappings(CorsRegistry registry) {
-//                System.out.println(SERVER_URL);
-//                registry.addMapping("/**")
-//                        .allowedOrigins(SERVER_URL)  // your frontend origin
-//                        .allowedMethods("GET", "POST", "PATCH")
-//                        .allowedHeaders("*")
-//                        .allowCredentials(true);
-//            }
-//        };
-//    }
-
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
+                System.out.println(SERVER_URL);
                 registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:5173")  // Match your frontend URL
-                        .allowedMethods("*")
+                        .allowedOrigins(SERVER_URL)  // your frontend origin
+                        .allowedMethods("GET", "POST", "PATCH")
                         .allowedHeaders("*")
                         .allowCredentials(true);
             }
