@@ -11,7 +11,7 @@ import java.util.Date;
 public class JwtUtil {
 
     public static String generateToken(String username, String secretKey) {
-        long expirationMillis = 15 * 60 * 1000; // 20 minutes
+        long expirationMillis = 150 * 60 * 1000; // 20 minutes
         return Jwts.builder()
                 .setSubject(username)
                 .setIssuedAt(new Date())
