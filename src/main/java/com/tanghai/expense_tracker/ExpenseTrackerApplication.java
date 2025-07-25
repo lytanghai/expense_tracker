@@ -8,8 +8,14 @@ import javax.annotation.PostConstruct;
 import java.util.TimeZone;
 
 @SpringBootApplication
-@EnableScheduling
+//@EnableScheduling
 public class ExpenseTrackerApplication {
+
+	@PostConstruct
+	void started() {
+		TimeZone.setDefault(TimeZone.getTimeZone("Asia/Phnom_Penh"));
+	}
+
 
 	public static void main(String[] args) {
 		SpringApplication.run(ExpenseTrackerApplication.class, args);

@@ -1,6 +1,6 @@
 package com.tanghai.expense_tracker.controller;
 
-import com.tanghai.expense_tracker.service.ScheduleService;
+import com.tanghai.expense_tracker.service.CronService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -9,30 +9,30 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/public/report")
 public class ReportController {
 
-    private final ScheduleService scheduleService;
+    private final CronService cronService;
 
-    public ReportController(ScheduleService scheduleService) {
-        this.scheduleService = scheduleService;
+    public ReportController(CronService cronService) {
+        this.cronService = cronService;
     }
 
     @GetMapping("/trigger-daily")
     public void sendReportDaily() {
-        scheduleService.fetchDaily();
+        cronService.runAt10PM();
     }
 
     @GetMapping("/trigger-monthly")
     public void sendReportMonthly() {
-        scheduleService.fetchMonthly();
+        cronService.runLastDayOfMonthAt1030PM();
     }
 
     @GetMapping("/trigger-cleanup")
     public void cleanupReport() {
-        scheduleService.cleanup();
+        cronService.runQuarterlyOnLastDay();
     }
 
     @GetMapping("/wakeup")
     public void wakeUp() {
-        System.out.println("Wake up called");
+        cronService.run();
     }
 
 }

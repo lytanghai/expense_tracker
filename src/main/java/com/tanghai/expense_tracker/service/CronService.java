@@ -3,13 +3,12 @@ package com.tanghai.expense_tracker.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
 
-@Component
+@Service
 public class CronService {
 
     @Value("${backend_server.web_url}")
@@ -25,19 +24,16 @@ public class CronService {
     }
 
     /** Trigger cron to prevent server sleep */
-    @Scheduled(cron = "0 */10 8-23 * * *")
     public void run() {
         restTemplate.postForObject(URL, null, String.class);
         log.info("Run by cron!");
     }
 
     /** Trigger cron daily report */
-    @Scheduled(cron = "0 0 22 * * *")
     public void runAt10PM() {
         scheduleService.fetchDaily();
     }
 
-    @Scheduled(cron = "0 30 22 28-31 * *")
     public void runLastDayOfMonthAt1030PM() {
         LocalDate today = LocalDate.now();
         LocalDate lastDay = today.withDayOfMonth(today.lengthOfMonth());
@@ -48,7 +44,6 @@ public class CronService {
         }
     }
 
-    @Scheduled(cron = "0 30 22 28-31 * *") // 10:30 PM on days 28-31 every month
     public void runQuarterlyOnLastDay() {
         LocalDate today = LocalDate.now();
         LocalDate lastDay = today.withDayOfMonth(today.lengthOfMonth());

@@ -14,22 +14,24 @@ import com.tanghai.expense_tracker.exception.ServiceException;
 import com.tanghai.expense_tracker.repository.ExpenseTrackerRepo;
 import com.tanghai.expense_tracker.repository.impl.ExpenseTrackerCustomRepoImpl;
 import com.tanghai.expense_tracker.service.ExpenseService;
-import com.tanghai.expense_tracker.service.ExpenseTrackerSpecification;
+import com.tanghai.expense_tracker.util.AmountUtil;
 import com.tanghai.expense_tracker.util.DateUtil;
-import com.tanghai.expense_tracker.util.ExchangeRateUtil;
 import com.tanghai.expense_tracker.util.ResponseBuilder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
+import javax.persistence.criteria.Predicate;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -56,7 +58,7 @@ public class ExpenseServiceImpl implements ExpenseService {
         if(reqAmount == null || reqAmount.compareTo(BigDecimal.ZERO) <= 0)
             throw new ServiceException(ApplicationCode.W002.getCode(), ApplicationCode.W002.getMessage());
 
-        String convertAmount = ExchangeRateUtil.convertAmount(
+        String convertAmount = convertAmount(
                 reqAmount.toString(),
                 reqCurrency
         );
@@ -124,7 +126,7 @@ public class ExpenseServiceImpl implements ExpenseService {
             }
 
             // Currency conversion logic
-            String convertAmount = ExchangeRateUtil.convertAmount(reqAmount.toString(), reqCurrency);
+            String convertAmount = convertAmount(reqAmount.toString(), reqCurrency);
             String convertedAmt = convertAmount.substring(4).replace(Static.COMMA, Static.EMPTY);
 
             existExpense.setPrice(reqAmount);
@@ -316,8 +318,35 @@ public class ExpenseServiceImpl implements ExpenseService {
     public Page<ExpenseResponse> getFilteredExpenses(ExpenseFilterRequest request) {
         Pageable pageable = PageRequest.of(request.getPage(), request.getSize(), Sort.by("expenseDate").descending());
 
-        return expenseTrackerRepo.findAll(ExpenseTrackerSpecification.filter(request), pageable)
+        return expenseTrackerRepo.findAll(this.filter(request), pageable)
                 .map(ExpenseResponse::new);
+    }
+
+    public static Specification<ExpenseTracker> filter(ExpenseFilterRequest req) {
+        return (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            if (req.getCategory() != null && !req.getCategory().isEmpty()) {
+                predicates.add(cb.like(cb.lower(root.get("category")), "%" + req.getCategory().toLowerCase() + "%"));
+            }
+
+            if (req.getItem() != null && !req.getItem().isEmpty()) {
+                predicates.add(cb.like(cb.lower(root.get("item")), "%" + req.getItem().toLowerCase() + "%"));
+            }
+
+            if (req.getCurrency() != null && !req.getCurrency().isEmpty()) {
+                predicates.add(cb.equal(cb.lower(root.get("currency")), req.getCurrency().toLowerCase()));
+            }
+
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+    }
+
+    public static String convertAmount(String amount, String currency) {
+        BigDecimal value = new BigDecimal(amount);
+        return currency.equals(Static.USD)
+                ? AmountUtil.getDisplayAmountKHR(Static.KHR, value.multiply(Static.USD_TO_KHR_RATE))
+                : AmountUtil.getDisplayAmountUSD(Static.USD, value.divide(Static.USD_TO_KHR_RATE, 2, RoundingMode.HALF_UP));
     }
 
 }
