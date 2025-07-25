@@ -1,12 +1,15 @@
 package com.tanghai.expense_tracker.dto.req;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.sun.istack.NotNull;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
 public class ProfitAddRequest {
-    @NotNull
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date date;
 
     @NotNull
