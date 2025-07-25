@@ -149,7 +149,7 @@ public class ExpenseServiceImpl implements ExpenseService {
     @Override
     @Transactional
     public void cleanup() {
-        expenseTrackerCustomRepo.truncateAndResetSequence();
+        expenseTrackerCustomRepo.truncateAndResetSequence(Static.EXPENSE_TRACKER_SEQ);
         ExpenseRecordCache.clear(); //Cache
     }
 

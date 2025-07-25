@@ -43,7 +43,6 @@ public class ExpenseTrackerController {
         return ResponseEntity.ok(expenseService.getFilteredExpenses(request));
     }
 
-
     /**
      * Fetch By monthly
      * month = 2025-07

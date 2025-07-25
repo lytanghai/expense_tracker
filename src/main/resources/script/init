@@ -1,0 +1,34 @@
+CREATE SEQUENCE expense_tracker_id_seq START 1 INCREMENT 1;
+
+CREATE TABLE public.expense_tracker (
+  id integer NOT NULL DEFAULT nextval('expense_tracker_id_seq'::regclass),
+  expense_date character varying NOT NULL,
+  category character varying NOT NULL,
+  item character varying NOT NULL,
+  price numeric NOT NULL,
+  currency character varying NOT NULL,
+  converted_price numeric NOT NULL,
+  converted_currency character varying NOT NULL,
+  note text,
+  CONSTRAINT expense_tracker_pkey PRIMARY KEY (id)
+);
+
+
+
+-- 1. Create sequence
+CREATE SEQUENCE profit_tracker_id_seq START 1 INCREMENT 1;
+
+-- 2. Create table
+CREATE TABLE public.profit_tracker (
+    id INTEGER NOT NULL DEFAULT nextval('profit_tracker_id_seq'::regclass),
+    date VARCHAR(50) NOT NULL,  -- Consider using DATE or TIMESTAMP
+    category VARCHAR(100) NOT NULL,
+    pnl NUMERIC(18, 2) NOT NULL,
+    currency VARCHAR(10) NOT NULL,
+    pnl_type VARCHAR(50) NOT NULL, -- e.g. 'gain' or 'loss'
+    converted_price NUMERIC(18, 2) NOT NULL,
+    converted_currency VARCHAR(10) NOT NULL,
+    note TEXT,
+    
+    constraint profit_tracker_pkey PRIMARY KEY (id)
+);

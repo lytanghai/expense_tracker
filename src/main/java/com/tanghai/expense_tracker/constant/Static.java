@@ -14,6 +14,7 @@ public class Static {
     public static final String CHAT_ID = "chat_id";
     public static final String TEXT = "text";
     public static final String EXPENSE_TRACKER_SEQ = "expense_tracker_id_seq";
+    public static final String PROFIT_TRACKER_SEQ = "profit_tracker_id_seq";
 
     //COMMON
     public static final String COMMA = ",";
