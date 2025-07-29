@@ -3,6 +3,7 @@ package com.tanghai.expense_tracker.controller;
 import com.tanghai.expense_tracker.dto.req.ProfitAddRequest;
 import com.tanghai.expense_tracker.dto.req.ProfitDeleteRequest;
 import com.tanghai.expense_tracker.dto.req.ProfitFilterRequest;
+import com.tanghai.expense_tracker.dto.res.ProExpTrackerResp;
 import com.tanghai.expense_tracker.dto.res.PaginatedResponse;
 import com.tanghai.expense_tracker.dto.res.ProfitResponse;
 import com.tanghai.expense_tracker.dto.res.ProfitTrackerListResp;
@@ -82,6 +83,16 @@ public class ProfitTrackerController {
     @GetMapping("/fetch-daily")
     public ResponseBuilder<ProfitTrackerListResp> responseProfitDaily() {
         return profitTrackerService.fetchDaily(false); // do not enable this
+    }
+
+    //     * month = 2025-07
+    //     * date1 && date2 = 2025-07-24
+    @GetMapping("/calculate")
+    public ResponseBuilder<ProExpTrackerResp> getTotalAmount(@RequestParam(name = "date1", defaultValue = "") String date1,
+                                                             @RequestParam(name = "date2", defaultValue = "") String date2,
+                                                             @RequestParam(name = "type", defaultValue = "") String type) {
+        System.out.println("CALLING PROFIT");
+        return profitTrackerService.calculate(type, date1, date2);
     }
 
 }

@@ -1,5 +1,6 @@
 package com.tanghai.expense_tracker.repository;
 
+import com.tanghai.expense_tracker.dto.res.CurrencyTotalProjection;
 import com.tanghai.expense_tracker.entity.ExpenseTracker;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -42,6 +43,30 @@ public interface ExpenseTrackerRepo extends JpaRepository<ExpenseTracker, Intege
             @Param("startDate") String startDate,
             @Param("endDate") String endDate
     );
+
+    @Query(value = "SELECT et.currency, SUM(et.price) AS total\n" +
+            "    FROM expense_tracker et\n" +
+            "    WHERE TO_TIMESTAMP(et.expense_date, 'DD-MM-YYYY HH24:MI:SS')\n" +
+            "          BETWEEN TO_TIMESTAMP(:start, 'DD-MM-YYYY HH24:MI:SS')\n" +
+            "              AND TO_TIMESTAMP(:end, 'DD-MM-YYYY HH24:MI:SS')\n" +
+            "    GROUP BY et.currency\n" +
+            "    ORDER BY et.currency"
+    , nativeQuery = true)
+    List<CurrencyTotalProjection> calculateTransactionDate(
+            @Param("start") String start,
+            @Param("end") String end
+    );
+
+    @Query(
+            value = "SELECT et.currency, SUM(et.price) AS total " +
+                    "FROM expense_tracker et " +
+                    "WHERE TO_CHAR(TO_TIMESTAMP(et.expense_date, 'DD-MM-YYYY HH24:MI:SS'), 'YYYY-MM') = :month GROUP BY et.currency",
+            countQuery = "SELECT COUNT(*) " +
+                    "FROM expense_tracker et " +
+                    "WHERE TO_CHAR(TO_TIMESTAMP(et.expense_date, 'DD-MM-YYYY HH24:MI:SS'), 'YYYY-MM') = :month",
+            nativeQuery = true
+    )
+    List<CurrencyTotalProjection> calculateTransactionPerMonth(String month);
 
     @Modifying
     @Transactional

@@ -5,6 +5,7 @@ import com.tanghai.expense_tracker.dto.req.ExpenseDeleteRequest;
 import com.tanghai.expense_tracker.dto.req.ExpenseFilterRequest;
 import com.tanghai.expense_tracker.dto.res.ExpenseResponse;
 import com.tanghai.expense_tracker.dto.res.ExpenseTrackerListResp;
+import com.tanghai.expense_tracker.dto.res.ProExpTrackerResp;
 import com.tanghai.expense_tracker.dto.res.PaginatedResponse;
 import com.tanghai.expense_tracker.entity.ExpenseTracker;
 import com.tanghai.expense_tracker.util.ResponseBuilder;
@@ -15,6 +16,7 @@ public interface ExpenseService {
     ResponseBuilder<PaginatedResponse<ExpenseTracker>> fetchMonthlyExpenses(String month, int page, int size);
     ResponseBuilder<PaginatedResponse<ExpenseTracker>> fetchExpensesByDate(String date1, String date2, int page, int size);
     ResponseBuilder<ExpenseTrackerListResp> fetchDaily(boolean enableCache);
+    ResponseBuilder<ProExpTrackerResp> calculate(String type, String date1, String date2);
     Page<ExpenseResponse> getFilteredExpenses(ExpenseFilterRequest request);
 
     void deleteByIdOrDate(ExpenseDeleteRequest expenseDeleteRequest);

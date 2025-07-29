@@ -5,9 +5,7 @@ import com.tanghai.expense_tracker.constant.Static;
 import com.tanghai.expense_tracker.dto.req.ProfitAddRequest;
 import com.tanghai.expense_tracker.dto.req.ProfitDeleteRequest;
 import com.tanghai.expense_tracker.dto.req.ProfitFilterRequest;
-import com.tanghai.expense_tracker.dto.res.PaginatedResponse;
-import com.tanghai.expense_tracker.dto.res.ProfitResponse;
-import com.tanghai.expense_tracker.dto.res.ProfitTrackerListResp;
+import com.tanghai.expense_tracker.dto.res.*;
 import com.tanghai.expense_tracker.entity.ProfitTracker;
 import com.tanghai.expense_tracker.exception.ServiceException;
 import com.tanghai.expense_tracker.repository.ProfitTrackerRepo;
@@ -296,6 +294,40 @@ public class ProfitTrackerServiceImpl implements ProfitTrackerService {
         response.setTotalAmountInKHR(totalTransactionInKhr);
 
         return ResponseBuilder.success(response);
+    }
+
+    @Override
+    public ResponseBuilder<ProExpTrackerResp> calculate(String type, String date1, String date2) {
+        List<CurrencyTotalProjection> total = null;
+        ProExpTrackerResp response = new ProExpTrackerResp();
+
+        if("month".equals(type)) {
+            String month = DateUtil.format(new Date());
+            month = DateUtil.convertToYearMonth(month);
+            total = profitTrackerRepo.calculateTransactionPerMonth(month);
+        } else {
+            if (date2 != null && !date2.isEmpty()) {
+                //date 1 && date 2
+                total = profitTrackerRepo.calculateTransactionDate(DateUtil.getDayDateRange(date1)[0], DateUtil.getDayDateRange(date2)[1]);
+            } else {
+                //date1
+                total = profitTrackerRepo.calculateTransactionDate(DateUtil.getDayDateRange(date1)[0], DateUtil.getDayDateRange(date1)[1]);
+            }
+        }
+        if(!total.isEmpty()) {
+            for(CurrencyTotalProjection ctp : total) {
+                if("KHR".equals(ctp.getCurrency())) {
+                    response.setCurrencyKhr(ctp.getCurrency());
+                    response.setTotalKhr(ctp.getTotal());
+                } else {
+                    response.setCurrencyUsd(ctp.getCurrency());
+                    response.setTotalUsd(ctp.getTotal());
+                }
+            }
+            return ResponseBuilder.success(response);
+        }
+
+        return ResponseBuilder.success(null);
     }
 
     public static String convertAmount(String amount, String currency) {

@@ -5,6 +5,7 @@ import com.tanghai.expense_tracker.dto.req.ExpenseDeleteRequest;
 import com.tanghai.expense_tracker.dto.req.ExpenseFilterRequest;
 import com.tanghai.expense_tracker.dto.res.ExpenseResponse;
 import com.tanghai.expense_tracker.dto.res.ExpenseTrackerListResp;
+import com.tanghai.expense_tracker.dto.res.ProExpTrackerResp;
 import com.tanghai.expense_tracker.dto.res.PaginatedResponse;
 import com.tanghai.expense_tracker.entity.ExpenseTracker;
 import com.tanghai.expense_tracker.service.ExpenseService;
@@ -68,6 +69,16 @@ public class ExpenseTrackerController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         return expenseService.fetchExpensesByDate(date1, date2, page, size);
+    }
+
+    //     * month = 2025-07
+    //     * date1 && date2 = 2025-07-24
+    @GetMapping("/calculate")
+    public ResponseBuilder<ProExpTrackerResp> getTotalAmount(@RequestParam(name = "date1", defaultValue = "") String date1,
+                                                             @RequestParam(name = "date2", defaultValue = "") String date2,
+                                                             @RequestParam(name = "type", defaultValue = "") String type) {
+        System.out.println("CALLING EXPENSE");
+        return expenseService.calculate(type, date1, date2);
     }
 
     /**

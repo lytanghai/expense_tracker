@@ -6,9 +6,7 @@ import com.tanghai.expense_tracker.constant.Static;
 import com.tanghai.expense_tracker.dto.req.ExpenseAddRequest;
 import com.tanghai.expense_tracker.dto.req.ExpenseDeleteRequest;
 import com.tanghai.expense_tracker.dto.req.ExpenseFilterRequest;
-import com.tanghai.expense_tracker.dto.res.ExpenseResponse;
-import com.tanghai.expense_tracker.dto.res.ExpenseTrackerListResp;
-import com.tanghai.expense_tracker.dto.res.PaginatedResponse;
+import com.tanghai.expense_tracker.dto.res.*;
 import com.tanghai.expense_tracker.entity.ExpenseTracker;
 import com.tanghai.expense_tracker.exception.ServiceException;
 import com.tanghai.expense_tracker.repository.ExpenseTrackerRepo;
@@ -263,7 +261,6 @@ public class ExpenseServiceImpl implements ExpenseService {
 
             String startDate;
             String endDate;
-
             if (date1 != null && !date1.isEmpty()) {
                 LocalDate start = LocalDate.parse(date1, inputFormatter);
                 startDate = start.atStartOfDay().format(outputFormatter);
@@ -320,6 +317,40 @@ public class ExpenseServiceImpl implements ExpenseService {
 
         return expenseTrackerRepo.findAll(this.filter(request), pageable)
                 .map(ExpenseResponse::new);
+    }
+
+    @Override
+    public ResponseBuilder<ProExpTrackerResp> calculate(String type, String date1, String date2) {
+        List<CurrencyTotalProjection> total = null;
+        ProExpTrackerResp response = new ProExpTrackerResp();
+
+        if("month".equals(type)) {
+            String month = DateUtil.format(new Date());
+            month = DateUtil.convertToYearMonth(month);
+            total = expenseTrackerRepo.calculateTransactionPerMonth(month);
+        } else {
+            if (date2 != null && !date2.isEmpty()) {
+                //date 1 && date 2
+                total = expenseTrackerRepo.calculateTransactionDate(DateUtil.getDayDateRange(date1)[0], DateUtil.getDayDateRange(date2)[1]);
+            } else {
+                //date1
+                total = expenseTrackerRepo.calculateTransactionDate(DateUtil.getDayDateRange(date1)[0], DateUtil.getDayDateRange(date1)[1]);
+            }
+        }
+        if(!total.isEmpty()) {
+            for(CurrencyTotalProjection ctp : total) {
+                if("KHR".equals(ctp.getCurrency())) {
+                    response.setCurrencyKhr(ctp.getCurrency());
+                    response.setTotalKhr(ctp.getTotal());
+                } else {
+                    response.setCurrencyUsd(ctp.getCurrency());
+                    response.setTotalUsd(ctp.getTotal());
+                }
+            }
+            return ResponseBuilder.success(response);
+        }
+
+        return ResponseBuilder.success(null);
     }
 
     public static Specification<ExpenseTracker> filter(ExpenseFilterRequest req) {
