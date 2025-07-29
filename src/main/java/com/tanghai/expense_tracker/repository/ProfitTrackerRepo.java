@@ -42,23 +42,33 @@ public interface ProfitTrackerRepo extends JpaRepository<ProfitTracker, Integer>
             @Param("endDate") String endDate
     );
 
-    @Query(value = "SELECT et.currency, SUM(et.pnl) AS total\n" +
-            "    FROM profit_tracker et\n" +
-            "    WHERE TO_TIMESTAMP(et.date, 'DD-MM-YYYY HH24:MI:SS')\n" +
-            "          BETWEEN TO_TIMESTAMP(:start, 'DD-MM-YYYY HH24:MI:SS')\n" +
-            "              AND TO_TIMESTAMP(:end, 'DD-MM-YYYY HH24:MI:SS')\n" +
-            "    GROUP BY et.currency\n" +
-            "    ORDER BY et.currency"
-            , nativeQuery = true)
+    @Query(value =
+            "SELECT et.currency, " +
+            "SUM(CASE " +
+            "WHEN et.pnl_type = '+' THEN et.pnl " +
+            "WHEN et.pnl_type = '-' THEN -et.pnl " +
+            "ELSE 0 " +
+            "END) AS total " +
+            "FROM profit_tracker et " +
+            "WHERE TO_TIMESTAMP(et.date, 'DD-MM-YYYY HH24:MI:SS') BETWEEN TO_TIMESTAMP(:start, 'DD-MM-YYYY HH24:MI:SS') AND TO_TIMESTAMP(:end, 'DD-MM-YYYY HH24:MI:SS') " +
+            "GROUP BY et.currency " +
+            "ORDER BY et.currency",
+            nativeQuery = true)
     List<CurrencyTotalProjection> calculateTransactionDate(
             @Param("start") String start,
             @Param("end") String end
     );
 
     @Query(
-            value = "SELECT et.currency, SUM(et.pnl) AS total " +
+            value = "SELECT et.currency, " +
+                    "SUM(CASE " +
+                    "    WHEN et.pnl_type = '+' THEN et.pnl " +
+                    "    WHEN et.pnl_type = '-' THEN -et.pnl " +
+                    "    ELSE 0 " +
+                    "END) AS total " +
                     "FROM profit_tracker et " +
-                    "WHERE TO_CHAR(TO_TIMESTAMP(et.date, 'DD-MM-YYYY HH24:MI:SS'), 'YYYY-MM') = :month GROUP BY et.currency",
+                    "WHERE TO_CHAR(TO_TIMESTAMP(et.date, 'DD-MM-YYYY HH24:MI:SS'), 'YYYY-MM') = :month " +
+                    "GROUP BY et.currency",
             countQuery = "SELECT COUNT(*) " +
                     "FROM profit_tracker et " +
                     "WHERE TO_CHAR(TO_TIMESTAMP(et.date, 'DD-MM-YYYY HH24:MI:SS'), 'YYYY-MM') = :month",

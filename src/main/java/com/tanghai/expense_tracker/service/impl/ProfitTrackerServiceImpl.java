@@ -298,7 +298,7 @@ public class ProfitTrackerServiceImpl implements ProfitTrackerService {
 
     @Override
     public ResponseBuilder<ProExpTrackerResp> calculate(String type, String date1, String date2) {
-        List<CurrencyTotalProjection> total = null;
+        List<CurrencyTotalProjection> total;
         ProExpTrackerResp response = new ProExpTrackerResp();
 
         if("month".equals(type)) {

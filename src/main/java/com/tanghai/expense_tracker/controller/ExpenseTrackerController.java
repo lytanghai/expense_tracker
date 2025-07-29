@@ -77,7 +77,6 @@ public class ExpenseTrackerController {
     public ResponseBuilder<ProExpTrackerResp> getTotalAmount(@RequestParam(name = "date1", defaultValue = "") String date1,
                                                              @RequestParam(name = "date2", defaultValue = "") String date2,
                                                              @RequestParam(name = "type", defaultValue = "") String type) {
-        System.out.println("CALLING EXPENSE");
         return expenseService.calculate(type, date1, date2);
     }
 
