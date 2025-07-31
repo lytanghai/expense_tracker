@@ -1,6 +1,6 @@
 spring:
-  profiles:
-    active: local
+#  profiles:
+#    active: local
   application:
     name: expense_tracker
   cloud:
@@ -33,6 +33,7 @@ telegram:
   chat-id: ${TELEGRAM_CHAT_ID}
 
 server:
+  rate_limit: ${RATE_LIMIT}
   servlet:
     context-path: /expense_tracker
   port: 8080

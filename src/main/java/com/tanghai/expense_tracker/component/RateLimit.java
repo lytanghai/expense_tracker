@@ -1,7 +1,6 @@
 package com.tanghai.expense_tracker.component;
 
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
-import org.springframework.context.annotation.Bean;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.*;
@@ -19,14 +18,14 @@ public class RateLimit implements Filter {
     private final Map<String, AtomicInteger> requestCountsPerIpAddress = new ConcurrentHashMap<>();
 
     // Maximum requests allowed per minute
-    private static final int MAX_REQUESTS_PER_MINUTE = 5;
+    @Value("${server.rate_limit:10}")
+    private int MAX_REQUESTS_PER_MINUTE;
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
-        System.out.println("LOGIN");
         String clientIpAddress = httpServletRequest.getRemoteAddr();
 
         // Initialize request count for the client IP address
@@ -36,8 +35,13 @@ public class RateLimit implements Filter {
         // Increment the request count
         int requests = requestCount.incrementAndGet();
 
-        // Check if the request limit has been exceeded
-        if (requests > MAX_REQUESTS_PER_MINUTE) {
+        if(httpServletRequest.getRequestURI().contains("/login") && requests > 3) {
+            httpServletResponse.setStatus(423);
+            httpServletResponse.getWriter().write("Too many incorrect username or password!. Please try again later.");
+            return;
+        }
+
+        if (!httpServletRequest.getRequestURI().contains("/login") && requests > MAX_REQUESTS_PER_MINUTE) {
             httpServletResponse.setStatus(429);
             httpServletResponse.getWriter().write("Too many requests. Please try again later.");
             return;
