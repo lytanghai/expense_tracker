@@ -26,7 +26,7 @@ public class RateLimit implements Filter {
             throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
-
+        System.out.println("LOGIN");
         String clientIpAddress = httpServletRequest.getRemoteAddr();
 
         // Initialize request count for the client IP address
@@ -59,15 +59,4 @@ public class RateLimit implements Filter {
         // Optional: Cleanup resources, if needed
     }
 
-
-    @Bean
-    public FilterRegistrationBean<RateLimit> rateLimitFilterRegistration(RateLimit rateLimit) {
-        FilterRegistrationBean<RateLimit> registrationBean = new FilterRegistrationBean<>();
-
-        registrationBean.setFilter(rateLimit);
-        registrationBean.addUrlPatterns("/login", "/expense_tracker/*");
-        registrationBean.setOrder(1);
-
-        return registrationBean;
-    }
 }
