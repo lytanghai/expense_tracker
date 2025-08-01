@@ -37,7 +37,7 @@ telegram:
   chat-id: 123
 
 server:
-  rate_limit: 10
+  rate_limit: 100
   servlet:
     context-path: /expense_tracker
   port: 8080

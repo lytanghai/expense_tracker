@@ -15,6 +15,8 @@ public class Static {
     public static final String TEXT = "text";
     public static final String EXPENSE_TRACKER_SEQ = "expense_tracker_id_seq";
     public static final String PROFIT_TRACKER_SEQ = "profit_tracker_id_seq";
+    public static final String DEPOSIT_HISTORY_SEQ = "deposit_history_id_seq";
+    public static final String SAVING_PLAN_SEQ = "saving_plan_id_seq";
 
     //COMMON
     public static final String COMMA = ",";

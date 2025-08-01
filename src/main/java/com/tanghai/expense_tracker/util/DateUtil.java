@@ -27,6 +27,7 @@ public final class DateUtil extends DateUtils {
 
     public static final String DATE_WITH_TIME_1 = "dd-MM-yyyy HH:mm:ss";
     public static final String DATE_FORMAT_2 = "yyyy-MM-dd'T'HH:mm:ss";
+    public static final String DATE_FORMAT_3 = "yyyy-MM-dd";
 
     // Accepts "HH:mm:ss" or "H:mm:ss" (e.g. 7:05:09)
     private static final DateTimeFormatter FORMAT = DateTimeFormatter.ofPattern("H:mm:ss");
@@ -40,6 +41,7 @@ public final class DateUtil extends DateUtils {
     public static LocalDateTime getMonthRange(String date) {
         return LocalDateTime.parse(date, DateTimeFormatter.ofPattern(DATE_FORMAT_2));
     }
+
 
     public static String[] getDayDateRange(Date date) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_WITH_TIME_1);
@@ -76,6 +78,7 @@ public final class DateUtil extends DateUtils {
         return format(date, DATE_WITH_TIME_1);
     }
 
+
     public static String format(Date date, String format) {
         return format(date, format, null);
     }
@@ -87,6 +90,22 @@ public final class DateUtil extends DateUtils {
     public static String convertToYearMonth(String dateStr) {
         return  DateTimeFormatter.ofPattern("yyyy-MM")
                 .format(LocalDateTime.parse(dateStr, DateTimeFormatter.ofPattern(DATE_WITH_TIME_1)));
+    }
+
+    public static Date convertToDateWithMidnight(String dateStr, Boolean includeHour) {
+        DateTimeFormatter formatter;
+
+        if(includeHour) {
+             formatter = DateTimeFormatter.ofPattern(DATE_WITH_TIME_1);
+        } else {
+             formatter = DateTimeFormatter.ofPattern(DATE_FORMAT_3);
+        }
+
+        // Parse to LocalDate
+        LocalDate localDate = LocalDate.parse(dateStr, formatter);
+
+        // Convert to java.util.Date at 00:00:00 in Asia/Phnom_Penh
+        return Date.from(localDate.atStartOfDay(ZoneId.of("Asia/Phnom_Penh")).toInstant());
     }
 
 }
