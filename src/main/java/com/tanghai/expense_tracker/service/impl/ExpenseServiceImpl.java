@@ -220,37 +220,28 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
 
     @Override
-    public ResponseBuilder<PaginatedResponse<ExpenseTracker>> fetchMonthlyExpenses(String month, int page, int size) {
+    public ResponseBuilder<ProExpTrackerResp> fetchMonthlyExpenses(String month) {
         if(month.isEmpty()) {
             month = DateUtil.format(new Date());
             month = DateUtil.convertToYearMonth(month);
         }
-        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
-        Page<ExpenseTracker> expensePage = expenseTrackerRepo.findByMonth(month, pageable);
+        ProExpTrackerResp response = new ProExpTrackerResp();
 
-        if(!expensePage.getContent().isEmpty()) {
-            List<ExpenseTracker> expenseDTOs = expensePage.getContent()
-                    .stream()
-                    .map(expense -> new ExpenseTracker(
-                            expense.getId(),
-                            expense.getItem(),
-                            expense.getCategory(),
-                            expense.getPrice(),
-                            expense.getExpenseDate(),
-                            expense.getCurrency()
-                    ))
-                    .collect(Collectors.toList());
-
-            PaginatedResponse<ExpenseTracker> paginated = new PaginatedResponse<>();
-            paginated.setContent(expenseDTOs);
-            paginated.setPage(expensePage.getNumber());
-            paginated.setSize(expensePage.getSize());
-            paginated.setTotalElements(expensePage.getTotalElements());
-            paginated.setTotalPages(expensePage.getTotalPages());
-            paginated.setLast(expensePage.isLast());
-            return ResponseBuilder.success(paginated);
+        List<CurrencyTotalProjection> total = expenseTrackerRepo.calculateTransactionPerMonth(month);
+        if(!total.isEmpty()) {
+            for(CurrencyTotalProjection ctp : total) {
+                if("KHR".equals(ctp.getCurrency())) {
+                    response.setCurrencyKhr(ctp.getCurrency());
+                    response.setTotalKhr(ctp.getTotal());
+                } else {
+                    response.setCurrencyUsd(ctp.getCurrency());
+                    response.setTotalUsd(ctp.getTotal());
+                }
+            }
+            return ResponseBuilder.success(response);
         }
         return ResponseBuilder.success(null);
+
     }
 
     @Override

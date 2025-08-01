@@ -13,7 +13,7 @@ import org.springframework.data.domain.Page;
 
 public interface ExpenseService {
 
-    ResponseBuilder<PaginatedResponse<ExpenseTracker>> fetchMonthlyExpenses(String month, int page, int size);
+    ResponseBuilder<ProExpTrackerResp> fetchMonthlyExpenses(String month);
     ResponseBuilder<PaginatedResponse<ExpenseTracker>> fetchExpensesByDate(String date1, String date2, int page, int size);
     ResponseBuilder<ExpenseTrackerListResp> fetchDaily(boolean enableCache);
     ResponseBuilder<ProExpTrackerResp> calculate(String type, String date1, String date2);

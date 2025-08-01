@@ -50,11 +50,9 @@ public class ExpenseTrackerController {
      * usage: manual - schedule
      * */
     @GetMapping("/fetch-monthly")
-    public ResponseBuilder<PaginatedResponse<ExpenseTracker>> responseMonthlyExpenses(
-            @RequestParam(defaultValue = "") String month,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        return expenseService.fetchMonthlyExpenses(month, page, size);
+    public ResponseBuilder<ProExpTrackerResp> responseMonthlyExpenses(
+            @RequestParam(defaultValue = "") String month) {
+        return expenseService.fetchMonthlyExpenses(month);
     }
 
     /**
