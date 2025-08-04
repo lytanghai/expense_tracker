@@ -7,6 +7,9 @@ public enum ApplicationCode {
     W003("W003","Item must not be null or empty!"),
     W004("W004","ID must not be null or empty!"),
     W005("W005","This record is not exist!"),
+    W006("W006","Saving Plan does not exist!"),
+    W007("W007","You cannot input more than your remaining target!"),
+    W008("W008","Failed to create a saving plan!")
     ;
 
     private String code;

@@ -56,7 +56,7 @@ public class ExpenseServiceImpl implements ExpenseService {
         if(reqAmount == null || reqAmount.compareTo(BigDecimal.ZERO) <= 0)
             throw new ServiceException(ApplicationCode.W002.getCode(), ApplicationCode.W002.getMessage());
 
-        String convertAmount = convertAmount(
+        String convertAmount = AmountUtil.convertAmount(
                 reqAmount.toString(),
                 reqCurrency
         );
@@ -124,7 +124,7 @@ public class ExpenseServiceImpl implements ExpenseService {
             }
 
             // Currency conversion logic
-            String convertAmount = convertAmount(reqAmount.toString(), reqCurrency);
+            String convertAmount = AmountUtil.convertAmount(reqAmount.toString(), reqCurrency);
             String convertedAmt = convertAmount.substring(4).replace(Static.COMMA, Static.EMPTY);
 
             existExpense.setPrice(reqAmount);
@@ -304,7 +304,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 
     @Override
     public Page<ExpenseResponse> getFilteredExpenses(ExpenseFilterRequest request) {
-        Pageable pageable = PageRequest.of(request.getPage(), request.getSize(), Sort.by("expenseDate").descending());
+        Pageable pageable = PageRequest.of(request.getPage(), request.getSize(), Sort.by("id").descending());
 
         return expenseTrackerRepo.findAll(this.filter(request), pageable)
                 .map(ExpenseResponse::new);
@@ -362,13 +362,6 @@ public class ExpenseServiceImpl implements ExpenseService {
 
             return cb.and(predicates.toArray(new Predicate[0]));
         };
-    }
-
-    public static String convertAmount(String amount, String currency) {
-        BigDecimal value = new BigDecimal(amount);
-        return currency.equals(Static.USD)
-                ? AmountUtil.getDisplayAmountKHR(Static.KHR, value.multiply(Static.USD_TO_KHR_RATE))
-                : AmountUtil.getDisplayAmountUSD(Static.USD, value.divide(Static.USD_TO_KHR_RATE, 2, RoundingMode.HALF_UP));
     }
 
 }

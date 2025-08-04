@@ -50,7 +50,7 @@ public class ProfitTrackerServiceImpl implements ProfitTrackerService {
         if(pnl == null || pnl.compareTo(BigDecimal.ZERO) <= 0)
             throw new ServiceException(ApplicationCode.W002.getCode(), ApplicationCode.W002.getMessage());
 
-        String convertAmount = convertAmount(
+        String convertAmount = AmountUtil.convertAmount(
                 pnl.toString(),
                 reqCurrency
         );
@@ -129,7 +129,7 @@ public class ProfitTrackerServiceImpl implements ProfitTrackerService {
             }
 
             // Currency conversion logic
-            String convertAmount = convertAmount(reqAmount.toString(), reqCurrency);
+            String convertAmount = AmountUtil.convertAmount(reqAmount.toString(), reqCurrency);
             String convertedAmt = convertAmount.substring(4).replace(Static.COMMA, Static.EMPTY);
 
             existProfit.setPnl(reqAmount);
@@ -152,7 +152,7 @@ public class ProfitTrackerServiceImpl implements ProfitTrackerService {
 
     @Override
     public Page<ProfitResponse> getFilteredProfit(ProfitFilterRequest request) {
-        Pageable pageable = PageRequest.of(request.getPage(), request.getSize(), Sort.by("date").descending());
+        Pageable pageable = PageRequest.of(request.getPage(), request.getSize(), Sort.by("id").descending());
 
         return profitTrackerRepo.findAll(this.filter(request), pageable)
                 .map(ProfitResponse::new);
@@ -328,13 +328,6 @@ public class ProfitTrackerServiceImpl implements ProfitTrackerService {
         }
 
         return ResponseBuilder.success(null);
-    }
-
-    public static String convertAmount(String amount, String currency) {
-        BigDecimal value = new BigDecimal(amount);
-        return currency.equals(Static.USD)
-                ? AmountUtil.getDisplayAmountKHR(Static.KHR, value.multiply(Static.USD_TO_KHR_RATE))
-                : AmountUtil.getDisplayAmountUSD(Static.USD, value.divide(Static.USD_TO_KHR_RATE, 2, RoundingMode.HALF_UP));
     }
 
     public static Specification<ProfitTracker> filter(ProfitFilterRequest req) {

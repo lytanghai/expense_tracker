@@ -8,6 +8,9 @@ import java.text.DecimalFormat;
 
 public class AmountUtil {
 
+    public AmountUtil() {
+    }
+
     public static String formatAmount(String amountStr) {
         try {
             double amount = Double.parseDouble(amountStr);
@@ -17,6 +20,13 @@ public class AmountUtil {
             return "Invalid number";
         }
     }
+    public static String convertAmount(String amount, String currency) {
+        BigDecimal value = new BigDecimal(amount);
+        return currency.equals(Static.USD)
+                ? AmountUtil.getDisplayAmountKHR(Static.KHR, value.multiply(Static.USD_TO_KHR_RATE))
+                : AmountUtil.getDisplayAmountUSD(Static.USD, value.divide(Static.USD_TO_KHR_RATE, 2, RoundingMode.HALF_UP));
+    }
+
 
     public static String getDisplayAmountUSD(String ccy, BigDecimal amount) {
         String strAmount = amount.setScale(2, RoundingMode.DOWN).toString();

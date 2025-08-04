@@ -1,5 +1,6 @@
 package com.tanghai.expense_tracker.service.impl;
 
+import com.tanghai.expense_tracker.constant.ApplicationCode;
 import com.tanghai.expense_tracker.constant.Static;
 import com.tanghai.expense_tracker.dto.req.DepositRequest;
 import com.tanghai.expense_tracker.dto.req.ExpenseDeleteRequest;
@@ -45,7 +46,7 @@ public class SavingPlanServiceImpl implements SavingPlanService {
             req.getAmount().compareTo(BigDecimal.ZERO) <= 0 ||
             req.getAmountCurrency().isEmpty() ||
             req.getTargetDate().isEmpty()) {
-            throw new ServiceException("","");
+            throw new ServiceException(ApplicationCode.W008.getCode(), ApplicationCode.W008.getMessage());
         }
         SavingPlan savingPlan = new SavingPlan();
         savingPlan.setPlanName(req.getPlanName());
@@ -90,7 +91,6 @@ public class SavingPlanServiceImpl implements SavingPlanService {
 
             return ResponseBuilder.success(paginated);
         }
-
         return ResponseBuilder.success(null);
     }
 
@@ -100,28 +100,27 @@ public class SavingPlanServiceImpl implements SavingPlanService {
         SavingPlan existPlan = repo.findById(request.getPlanId()).orElse(null);
 
         if (existPlan == null) {
-            throw new ServiceException("Error","Plan does not exist!");
+            throw new ServiceException(ApplicationCode.W006.getCode(), ApplicationCode.W006.getMessage());
         }
 
         BigDecimal depositAmount;
-
         if(!existPlan.getTargetCurrency().equals(request.getCurrency())) {
             if("KHR".equals(request.getCurrency())) {
-                depositAmount = request.getAmount().multiply(Static.USD_TO_KHR_RATE);
-            } else {
                 depositAmount = request.getAmount().divide(Static.USD_TO_KHR_RATE);
+            } else {
+                depositAmount = request.getAmount().multiply(Static.USD_TO_KHR_RATE);
             }
+            depositAmount = existPlan.getCurrentAmount().add(depositAmount);
         } else {
             depositAmount = existPlan.getCurrentAmount().add(request.getAmount());
         }
 
         if(depositAmount.compareTo(existPlan.getTargetAmount()) > 0) {
-            throw new ServiceException("Error","You cannot input more than your remaining target!");
+            throw new ServiceException(ApplicationCode.W007.getCode(), ApplicationCode.W007.getMessage());
         }
         existPlan.setCurrentAmount(depositAmount);
 
         Date depositDate = new Date();
-
         repo.save(existPlan);
 
         DepositHistory depositHistory = new DepositHistory();
@@ -134,7 +133,7 @@ public class SavingPlanServiceImpl implements SavingPlanService {
         DepositResp response = new DepositResp();
         response.setAmount(request.getAmount());
         response.setCurrency(request.getCurrency());
-        response.setProgress(findProgress(existPlan.getTargetAmount(), existPlan.getCurrentAmount(), request.getAmount()));
+        response.setProgress(calculateProgress(existPlan.getCurrentAmount(), existPlan.getTargetAmount()));
         response.setTransactionDate(DateUtil.format(depositDate, "dd-MM-yyyy HH:mm:ss"));
         return ResponseBuilder.success(response);
     }
@@ -175,19 +174,24 @@ public class SavingPlanServiceImpl implements SavingPlanService {
         repo.deleteById(req.getId());
     }
 
-    private String findProgress(BigDecimal targetAmount, BigDecimal currentAmount, BigDecimal depositAmount) {
-        if (targetAmount.compareTo(BigDecimal.ZERO) == 0) {
-            return "0 %";
+    public static String calculateProgress(BigDecimal currentAmount, BigDecimal targetAmount) {
+        if (targetAmount == null || targetAmount.compareTo(BigDecimal.ZERO) == 0) {
+            return BigDecimal.ZERO.toString();
+        }
+        if (currentAmount == null) {
+            currentAmount = BigDecimal.ZERO;
         }
 
-        BigDecimal progress = currentAmount.add(depositAmount)
-                .divide(targetAmount, 4, RoundingMode.HALF_DOWN)
-                .multiply(BigDecimal.valueOf(100));
+        BigDecimal progress = currentAmount
+                .divide(targetAmount, 4, RoundingMode.HALF_UP)
+                .multiply(new BigDecimal("100"));
 
-        if (progress.compareTo(BigDecimal.valueOf(100)) > 0) {
-            progress = BigDecimal.valueOf(100);
+        // cap at 100
+        if (progress.compareTo(new BigDecimal("100")) > 0) {
+            return new BigDecimal("100.00").toString();
         }
 
-        return progress.setScale(2, RoundingMode.HALF_DOWN).toString() + " %";
+        return progress.setScale(2, RoundingMode.HALF_UP).toString();
     }
+
 }
