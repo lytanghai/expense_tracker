@@ -3,6 +3,7 @@ package com.tanghai.expense_tracker.controller;
 import com.tanghai.expense_tracker.dto.req.AuthRequest;
 import com.tanghai.expense_tracker.service.AuthService;
 import com.tanghai.expense_tracker.util.JwtUtil;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +20,9 @@ public class AuthController {
         this.authService = authService;
     }
 
+    @Value("${app.version}")
+    private String appVersion;
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthRequest request) {
         if (authService.isValid(request.getUsername(), request.getPassword())) {
@@ -26,6 +30,7 @@ public class AuthController {
             Map<String,Object> map = new HashMap<>();
             map.put("token", token);
             map.put("username", JwtUtil.extractUsername(token, authService.getSecretKey()));
+            map.put("app_version", appVersion);
             return ResponseEntity.ok().body(map);
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");

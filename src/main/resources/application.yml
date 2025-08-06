@@ -37,3 +37,6 @@ server:
   servlet:
     context-path: /expense_tracker
   port: 8080
+
+app:
+  version: 1.0.10
