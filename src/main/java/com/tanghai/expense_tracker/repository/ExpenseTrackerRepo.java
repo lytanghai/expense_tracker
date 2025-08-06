@@ -44,14 +44,14 @@ public interface ExpenseTrackerRepo extends JpaRepository<ExpenseTracker, Intege
             @Param("endDate") String endDate
     );
 
-    @Query(value = "SELECT et.currency, SUM(et.price) AS total\n" +
+    @Query(value = " SELECT et.currency,  CAST(SUM(et.price) AS DECIMAL(18, 2)) AS total" +
             "    FROM expense_tracker et\n" +
             "    WHERE TO_TIMESTAMP(et.expense_date, 'DD-MM-YYYY HH24:MI:SS')\n" +
             "          BETWEEN TO_TIMESTAMP(:start, 'DD-MM-YYYY HH24:MI:SS')\n" +
             "              AND TO_TIMESTAMP(:end, 'DD-MM-YYYY HH24:MI:SS')\n" +
             "    GROUP BY et.currency\n" +
             "    ORDER BY et.currency"
-    , nativeQuery = true)
+            , nativeQuery = true)
     List<CurrencyTotalProjection> calculateTransactionDate(
             @Param("start") String start,
             @Param("end") String end
