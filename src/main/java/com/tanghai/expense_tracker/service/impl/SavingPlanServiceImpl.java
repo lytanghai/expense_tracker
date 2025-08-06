@@ -41,6 +41,7 @@ public class SavingPlanServiceImpl implements SavingPlanService {
     }
 
     @Override
+    @Transactional
     public void createSavingPlan(SavingPlanCreateReq req) {
         if (req.getPlanName().isEmpty() ||
             req.getAmount().compareTo(BigDecimal.ZERO) <= 0 ||
@@ -57,7 +58,15 @@ public class SavingPlanServiceImpl implements SavingPlanService {
         savingPlan.setDeadline(DateUtil.convertToDateWithMidnight(req.getTargetDate(), false));
         savingPlan.setCreatedAt(new Date());
         savingPlan.setStatus("ongoing");
-        repo.save(savingPlan);
+        SavingPlan savedPlan  = repo.save(savingPlan);
+
+        if(req.getInitialAmount().compareTo(BigDecimal.ZERO) > 0) {
+            DepositRequest depositRequest = new DepositRequest();
+            depositRequest.setAmount(req.getInitialAmount());
+            depositRequest.setCurrency(req.getInitialAmountCurrency());
+            depositRequest.setPlanId(savedPlan.getId());
+            deposit(depositRequest);
+        }
     }
 
     @Override
